@@ -241,24 +241,24 @@ h3 {
     border-color: var(--accent);
 }
 
-/* Skills: one screen tall; JS pins it and zooms .skills__inner in from small and blurred */
+/* Zoom sections (skills, contact): one screen tall; JS pins them and zooms the inner block in from small and blurred */
 .section--soft {
     background: var(--bg-soft);
 }
 
-.skills {
+.zoom-section {
     min-height: 100svh;
     display: grid;
     align-content: center;
     overflow: hidden;
 }
 
-.skills__inner {
+.zoom-section__inner {
     transform-origin: center;
     will-change: transform, filter;
 }
 
-.skills__inner > .label {
+.zoom-section__inner > .label {
     margin-bottom: 1.5rem;
 }
 

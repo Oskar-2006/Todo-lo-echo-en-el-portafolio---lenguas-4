@@ -71,27 +71,28 @@ function initProjects() {
     });
 }
 
-// Skills: pinned, start small and blurred, zoom in while the blur clears, then hold
-function initSkillsZoom() {
-    const section = document.querySelector("#skills");
-    const inner = section.querySelector(".skills__inner");
+// Skills and contact: pinned, start small and blurred, zoom in while the blur clears, then hold
+function initZoomSections() {
+    document.querySelectorAll(".zoom-section").forEach((section) => {
+        const inner = section.querySelector(".zoom-section__inner");
 
-    gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: "+=120%",
-            pin: true,
-            scrub: true,
-            invalidateOnRefresh: true,
-            anticipatePin: 1,
-        },
-    })
-        .fromTo(inner,
-            { scale: 0.45, filter: "blur(14px)", opacity: 0.5 },
-            { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.8 })
-        .to(inner, { duration: 0.2 });
+        gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+                trigger: section,
+                start: "top top",
+                end: "+=120%",
+                pin: true,
+                scrub: true,
+                invalidateOnRefresh: true,
+                anticipatePin: 1,
+            },
+        })
+            .fromTo(inner,
+                { scale: 0.45, filter: "blur(14px)", opacity: 0.5 },
+                { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.8 })
+            .to(inner, { duration: 0.2 });
+    });
 }
 
 // Cursor: a dot that follows the mouse and shows a label over [data-cursor] elements
@@ -157,7 +158,7 @@ function initMotion() {
     initScroll();
     // Pins first, in page order, so later triggers measure the right positions
     initProjects();
-    initSkillsZoom();
+    initZoomSections();
     initReveal();
     initCursor();
 

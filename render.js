@@ -85,10 +85,10 @@ function renderList(group, extraClass = "") {
         h("ul", { class: `list ${extraClass}`.trim() }, group.items.map((text) => h("li", {}, text))));
 }
 
-// Pinned: the content starts small and blurred and zooms in as you scroll (see initSkillsZoom)
+// Pinned: the content starts small and blurred and zooms in as you scroll (see initZoomSections)
 function renderSkills({ skills }) {
-    return h("section", { id: "skills", class: "section section--soft skills", "data-anchor": "0.85" },
-        h("div", { class: "skills__inner" },
+    return h("section", { id: "skills", class: "section section--soft zoom-section skills", "data-anchor": "0.85" },
+        h("div", { class: "zoom-section__inner" },
             h("p", { class: "label" }, skills.label),
             h("div", { class: "skills__grid" },
                 renderList(skills.skills),
@@ -97,14 +97,15 @@ function renderSkills({ skills }) {
 
 function renderContact({ contact }) {
     const social = contact.social.filter((link) => link.url);
-    return h("section", { id: "contact", class: "section section--soft contact" },
-        h("p", { class: "label", "data-reveal": true }, contact.label),
-        h("h2", { "data-reveal": true }, contact.title),
-        h("a", { class: "contact__mail", href: `mailto:${contact.email}`, "data-reveal": true, "data-cursor": contact.emailCursor }, contact.email),
-        social.length
-            ? h("div", { class: "contact__social", "data-reveal": true },
-                social.map((link) => h("a", { href: link.url, target: "_blank", rel: "noopener" }, link.label)))
-            : null);
+    return h("section", { id: "contact", class: "section section--soft zoom-section contact", "data-anchor": "0.85" },
+        h("div", { class: "zoom-section__inner" },
+            h("p", { class: "label" }, contact.label),
+            h("h2", {}, contact.title),
+            h("a", { class: "contact__mail", href: `mailto:${contact.email}`, "data-cursor": contact.emailCursor }, contact.email),
+            social.length
+                ? h("div", { class: "contact__social" },
+                    social.map((link) => h("a", { href: link.url, target: "_blank", rel: "noopener" }, link.label)))
+                : null));
 }
 
 function renderPage(info) {

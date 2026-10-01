@@ -1,0 +1,103 @@
+{
+    "_ayuda": "Todo el contenido de la página sale de este archivo. Los archivos (imágenes, videos, modelos) van en la carpeta objects/ y se enlazan con la ruta, por ejemplo: \"objects/mi-render.webm\". Deja un texto vacío (\"\") para ocultar ese elemento. No se pueden poner comentarios dentro de un JSON.",
+
+    "site": {
+        "lang": "es",
+        "title": "Oskar Bohorquez | Portafolio",
+        "description": "Portafolio de Oskar Bohorquez, estudiante de Creación Digital: modelado 3D, animación, motion graphics y desarrollo web.",
+        "logo": "OB",
+        "footer": "© 2026 Oskar Bohorquez"
+    },
+
+    "nav": [
+        { "label": "Sobre mí", "target": "#about" },
+        { "label": "Proyectos", "target": "#projects" },
+        { "label": "Habilidades", "target": "#skills" },
+        { "label": "Contacto", "target": "#contact" }
+    ],
+
+    "hero": {
+        "label": "Creación Digital · Semestre 4",
+        "name": ["Oskar Alejandro", "Bohorquez Vallejo"],
+        "tagline": "Flexible y adaptable a cualquier proyecto: puedo enfocarme en una sola rama o coordinar y comunicar entre varias.",
+        "cta": { "text": "Ver proyectos", "target": "#projects", "cursor": "Bajar" },
+        "media": {
+            "type": "placeholder",
+            "src": "",
+            "placeholder": "Render / animación aquí",
+            "cursor": "Próximamente"
+        }
+    },
+
+    "about": {
+        "label": "01 · Sobre mí",
+        "title": "Productos digitales ágiles, con calidad.",
+        "paragraphs": [
+            "Soy estudiante de Creación Digital en la Universidad El Bosque (Colombia). La carrera se enfoca en desarrollar productos digitales con herramientas modernas, incluido el manejo de IA, para sacarlos de forma ágil y con calidad excepcional. Además, es una carrera versátil para lo que quiera dedicarme.",
+            "Me interesan los videojuegos, el modelado, la animación y el código. Son las ramas que más quiero aprender y a las que pienso dedicarme, pero también voy a estudiar y aplicar el resto de lo que abarca mi carrera."
+        ],
+        "note": "Viajo a Bogotá por temas de estudio."
+    },
+
+    "projects": {
+        "label": "02 · Proyectos",
+        "title": "Trabajo seleccionado",
+        "hint": "Sigue bajando para recorrerlos →",
+        "outro": "Más proyectos próximamente.",
+        "items": [
+            {
+                "name": "Proyecto 1",
+                "description": "Próximamente.",
+                "role": "",
+                "image": "",
+                "video": "",
+                "link": "",
+                "cursor": "Ver proyecto"
+            },
+            {
+                "name": "Proyecto 2",
+                "description": "Próximamente.",
+                "role": "",
+                "image": "",
+                "video": "",
+                "link": "",
+                "cursor": "Ver proyecto"
+            }
+        ]
+    },
+
+    "skills": {
+        "label": "03 · Habilidades",
+        "skills": {
+            "title": "Lo que hago",
+            "items": [
+                "Modelado 3D de personajes",
+                "Animación",
+                "Motion graphics",
+                "Diseño web UI/UX",
+                "Programación en HTML, CSS y JS"
+            ]
+        },
+        "tools": {
+            "title": "Con qué lo hago",
+            "items": [
+                "Blender",
+                "HTML5, CSS, JS",
+                "DaVinci Resolve",
+                "After Effects",
+                "Affinity",
+                "Photoshop"
+            ]
+        }
+    },
+
+    "contact": {
+        "label": "04 · Contacto",
+        "title": "¿Trabajamos juntos?",
+        "email": "oskarbohorquez2006@gmail.com",
+        "emailCursor": "Escribir",
+        "social": [
+            { "label": "GitHub", "url": "" }
+        ]
+    }
+}

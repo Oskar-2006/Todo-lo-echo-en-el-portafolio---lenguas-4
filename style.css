@@ -1,0 +1,448 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #1f1d1b;
+    --bg-soft: #2a2724;
+    --text: #f3eee8;
+    --muted: #a39b92;
+    --line: #5a524d;
+    --accent: #e8672c;
+    --font-display: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "DM Mono", ui-monospace, monospace;
+    --gutter: clamp(1.25rem, 5vw, 4rem);
+}
+
+/* Lenis handles smoothing; native smooth scroll on top of it makes the wheel feel sluggish */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+h1, h2, h3 {
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+}
+
+h1 {
+    font-size: clamp(2.6rem, 8vw, 6.5rem);
+    font-weight: 700;
+}
+
+h2 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+}
+
+.muted {
+    color: var(--muted);
+}
+
+/* Header */
+.site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem var(--gutter);
+    background: linear-gradient(var(--bg), transparent);
+}
+
+.logo {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.site-header nav {
+    display: flex;
+    gap: clamp(0.8rem, 2.5vw, 2rem);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.site-header nav a {
+    color: var(--muted);
+    transition: color 0.2s;
+}
+
+.site-header nav a:hover,
+.site-header nav a:focus-visible {
+    color: var(--accent);
+}
+
+/* Layout */
+.section {
+    padding: clamp(4rem, 12vw, 9rem) var(--gutter);
+    border-top: 1px solid var(--line);
+}
+
+.section > .label {
+    margin-bottom: 1.5rem;
+}
+
+/* Hero */
+.hero {
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 3rem;
+    align-items: center;
+    padding: 7rem var(--gutter) 4rem;
+}
+
+.hero__text > * + * {
+    margin-top: 1.5rem;
+}
+
+.hero__tagline {
+    max-width: 34rem;
+    color: var(--muted);
+}
+
+.hero__media {
+    aspect-ratio: 4 / 5;
+    display: grid;
+    place-items: center;
+    background: var(--bg-soft);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hero__media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.button {
+    display: inline-block;
+    padding: 0.85rem 1.6rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    transition: background 0.2s, color 0.2s;
+}
+
+.button:hover,
+.button:focus-visible {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+/* About */
+.about__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+.about__body > * + * {
+    margin-top: 1.2rem;
+}
+
+/* Projects: horizontal track. Without JS it scrolls sideways by hand. */
+.projects {
+    border-top: 1px solid var(--line);
+}
+
+.projects__pin {
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.js .projects__pin {
+    overflow: hidden;
+}
+
+.projects__track {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    width: max-content;
+    padding: 0 var(--gutter);
+}
+
+.projects__intro,
+.projects__outro {
+    flex: 0 0 auto;
+    width: min(80vw, 26rem);
+}
+
+.projects__intro > * + *,
+.projects__outro > * + * {
+    margin-top: 1.2rem;
+}
+
+.project-card {
+    flex: 0 0 auto;
+    width: min(78vw, 40rem);
+}
+
+.project-card__media {
+    aspect-ratio: 16 / 10;
+    margin-bottom: 1rem;
+    background: var(--bg-soft);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+}
+
+.project-card:hover .project-card__media {
+    border-color: var(--accent);
+}
+
+/* Skills: one screen tall; JS pins it and zooms .skills__inner in from small and blurred */
+.section--soft {
+    background: var(--bg-soft);
+}
+
+.skills {
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    overflow: hidden;
+}
+
+.skills__inner {
+    transform-origin: center;
+    will-change: transform, filter;
+}
+
+.skills__inner > .label {
+    margin-bottom: 1.5rem;
+}
+
+.site-footer {
+    background: var(--bg-soft);
+}
+
+.skills__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+.list {
+    margin-top: 1.5rem;
+}
+
+.list li {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.list--mono li {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+}
+
+/* Contact */
+.contact__mail {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: clamp(1.2rem, 4vw, 2.4rem);
+    font-weight: 500;
+    border-bottom: 2px solid var(--accent);
+    word-break: break-all;
+    transition: color 0.2s;
+}
+
+.contact__mail:hover,
+.contact__mail:focus-visible {
+    color: var(--accent);
+}
+
+.contact__social {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.contact__social a {
+    color: var(--muted);
+    transition: color 0.2s;
+}
+
+.contact__social a:hover,
+.contact__social a:focus-visible {
+    color: var(--accent);
+}
+
+.project-card__media img,
+.project-card__media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+}
+
+.site-footer {
+    padding: 2rem var(--gutter);
+    border-top: 1px solid var(--line);
+}
+
+/* Reveal: hidden only when JS is running, so the page works without it */
+.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* Custom cursor: only created by JS on devices with a real mouse */
+.has-cursor,
+.has-cursor a,
+.has-cursor button {
+    cursor: none;
+}
+
+.cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.cursor.is-visible {
+    opacity: 1;
+}
+
+.cursor__dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s;
+}
+
+.cursor__label {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 0.4rem 0.8rem;
+    border-radius: 10px 10px 2px 10px;
+    background: var(--text);
+    color: var(--bg);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transform: scale(0.7);
+    transform-origin: bottom right;
+    transition: opacity 0.18s, transform 0.18s;
+}
+
+.cursor.has-label .cursor__label {
+    opacity: 1;
+    transform: none;
+}
+
+.cursor.has-label .cursor__dot {
+    transform: translate(-50%, -50%) scale(0.7);
+}
+
+@media (max-width: 760px) {
+    .hero,
+    .about__grid,
+    .skills__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding-top: 6rem;
+    }
+
+    .hero__media {
+        aspect-ratio: 16 / 10;
+    }
+
+    .skills__grid {
+        gap: 1.5rem;
+    }
+
+    .skills .list {
+        margin-top: 0.8rem;
+    }
+
+    .skills .list li {
+        padding: 0.45rem 0;
+    }
+
+    .site-header nav a:not(:last-child) {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .js [data-reveal] {
+        opacity: 1;
+        transform: none;
+    }
+}

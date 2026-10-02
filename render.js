@@ -11,9 +11,9 @@ function h(tag, props = {}, ...children) {
 }
 
 // A video or image element for a path inside objects/, or null when there is none
-function mediaElement({ video, image, alt = "" }) {
+function mediaElement({ video, image, alt = "", eager = false }) {
     if (video) return h("video", { src: video, autoplay: true, muted: true, loop: true, playsinline: true });
-    if (image) return h("img", { src: image, alt, loading: "lazy" });
+    if (image) return h("img", { src: image, alt, loading: eager ? "eager" : "lazy" });
     return null;
 }
 
@@ -26,7 +26,7 @@ function renderHeader({ site, nav }) {
 
 function renderHero({ hero }) {
     const { media } = hero;
-    const content = mediaElement({ video: media.type === "video" ? media.src : "", image: media.type === "image" ? media.src : "" });
+    const content = mediaElement({ video: media.type === "video" ? media.src : "", image: media.type === "image" ? media.src : "", alt: media.alt, eager: true });
     const nameLines = hero.name.flatMap((line, index) => (index === 0 ? [line] : [h("br"), line]));
 
     return h("section", { id: "hero", class: "hero" },
@@ -36,7 +36,7 @@ function renderHero({ hero }) {
             h("p", { class: "hero__tagline", "data-reveal": true }, hero.tagline),
             h("a", { href: hero.cta.target, class: "button", "data-reveal": true, "data-cursor": hero.cta.cursor }, hero.cta.text)),
         h("div", {
-            class: "hero__media",
+            class: content ? "hero__media hero__media--filled" : "hero__media",
             "data-reveal": true,
             "data-cursor": media.cursor,
             "aria-label": content ? "" : "Espacio reservado para un render o animación",

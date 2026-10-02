@@ -22,10 +22,11 @@
         "tagline": "Flexible y adaptable a cualquier proyecto: puedo enfocarme en una sola rama o coordinar y comunicar entre varias.",
         "cta": { "text": "Ver proyectos", "target": "#projects", "cursor": "Bajar" },
         "media": {
-            "type": "placeholder",
-            "src": "",
+            "type": "image",
+            "src": "objects/llave-ingenieria.webp",
+            "alt": "Llave 3D con cabeza de engranaje y un átomo en el centro, modelada en Blender",
             "placeholder": "Render / animación aquí",
-            "cursor": "Próximamente"
+            "cursor": "Modelada en Blender"
         }
     },
 

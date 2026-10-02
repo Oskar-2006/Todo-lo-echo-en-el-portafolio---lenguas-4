@@ -1,5 +1,4 @@
 const root = document.documentElement;
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const hasLibs = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
 
 let lenis = null;
@@ -289,7 +288,8 @@ function initCurrentSection() {
 }
 
 function initMotion() {
-    const animated = hasLibs && !reducedMotion;
+    // The motion runs for every visitor, including those whose system asks for reduced motion (owner's decision)
+    const animated = hasLibs;
     initProjectsToggle(animated);
     initCurrentSection();
     if (!animated) return;

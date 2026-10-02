@@ -19,7 +19,7 @@
     "hero": {
         "label": "Creación Digital · Semestre 4",
         "name": ["Oskar", "Bohorquez"],
-        "tagline": "Flexible y adaptable a cualquier proyecto: puedo enfocarme en una sola rama o coordinar y comunicar entre varias.",
+        "tagline": "Modelo, animo en 3D, diseño y construyo sitios web.",
         "cta": { "text": "Ver proyectos", "target": "#projects", "cursor": "Bajar" },
         "media": {
             "type": "image",

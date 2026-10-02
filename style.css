@@ -209,57 +209,214 @@ h3 {
     margin-top: 1.2rem;
 }
 
-/* Projects: horizontal track. Without JS it scrolls sideways by hand. */
+/* Projects: one markup, two modes. Carousel by default; the button switches to detail. */
 .projects {
     border-top: 1px solid var(--line);
 }
 
-.projects__pin {
-    height: 100svh;
+.projects__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1.5rem;
+    padding: 6rem var(--gutter) 2rem;
+}
+
+.projects__head h2 {
+    margin-top: 1rem;
+}
+
+.projects__toggle {
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.project__main img,
+.project__extra img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 14px;
+}
+
+/* Screenshots fade out at the bottom so they sit on the page like the transparent 3D renders do */
+.project--phone img,
+.project--wide img {
+    -webkit-mask-image: linear-gradient(#000 62%, transparent);
+    mask-image: linear-gradient(#000 62%, transparent);
+}
+
+.project--render img {
+    object-fit: contain;
+    border-radius: 0;
+}
+
+.project--render .project__main,
+.project--render .project__extra {
+    aspect-ratio: 4 / 5;
+    background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%);
+}
+
+.project--phone .project__main,
+.project--phone .project__extra {
+    aspect-ratio: 9 / 17;
+}
+
+.project--wide .project__main {
+    aspect-ratio: 16 / 10;
+}
+
+.project__num {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.project__type {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+}
+
+.facts {
+    margin-top: 1.6rem;
+    border-top: 1px solid var(--line);
+}
+
+.facts div {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+}
+
+.facts dt {
+    padding-top: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+/* Carousel: a row of cards. Scrolls sideways by hand and snaps to the nearest card;
+   on wide screens main.js pins the section and drives the row with vertical scroll instead. */
+.projects[data-mode="carousel"] .projects__pin {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+}
+
+.projects[data-mode="carousel"] .projects__scroller {
+    flex: 1;
     display: flex;
     align-items: center;
     overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
 }
 
-.js .projects__pin {
+.projects[data-mode="carousel"].is-pinned .projects__scroller {
     overflow: hidden;
+    scroll-snap-type: none;
 }
 
-.projects__track {
+.projects[data-mode="carousel"] .projects__track {
     display: flex;
-    align-items: center;
-    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: flex-start;
+    gap: clamp(2rem, 6vw, 6rem);
     width: max-content;
-    padding: 0 var(--gutter);
+    /* Side room so the first and the last card can sit in the middle of the screen */
+    padding: 0 max(var(--gutter), calc(50vw - 11rem)) 3rem;
 }
 
-.projects__intro,
-.projects__outro {
+.projects[data-mode="carousel"] .project {
     flex: 0 0 auto;
-    width: min(80vw, 26rem);
+    width: min-content;
+    scroll-snap-align: center;
 }
 
-.projects__intro > * + *,
-.projects__outro > * + * {
-    margin-top: 1.2rem;
+.projects[data-mode="carousel"] .project__main {
+    height: min(50svh, 30rem);
+    margin-bottom: 1.2rem;
 }
 
-.project-card {
-    flex: 0 0 auto;
-    width: min(78vw, 40rem);
+.projects[data-mode="carousel"] .project__extra,
+.projects[data-mode="carousel"] .project__type,
+.projects[data-mode="carousel"] .project__detail {
+    display: none;
 }
 
-.project-card__media {
-    aspect-ratio: 16 / 10;
-    margin-bottom: 1rem;
-    background: var(--bg-soft);
-    border: 1px dashed var(--line);
-    border-radius: 8px;
-    transition: border-color 0.2s;
+.projects[data-mode="carousel"] .project h3 {
+    margin: 0.3rem 0;
+    white-space: nowrap;
 }
 
-.project-card:hover .project-card__media {
-    border-color: var(--accent);
+/* Detail: one row per project, image and text side by side, alternating */
+.projects[data-mode="detail"] .project {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+    padding: clamp(3rem, 7vw, 6rem) var(--gutter);
+    border-top: 1px solid var(--line);
+}
+
+.projects[data-mode="detail"] .project:nth-child(even) .project__body {
+    order: -1;
+}
+
+.projects[data-mode="detail"] .project__media {
+    display: grid;
+    gap: clamp(0.7rem, 1.6vw, 1.4rem);
+    justify-content: center;
+}
+
+.projects[data-mode="detail"] .project--render .project__media {
+    grid-template-columns: repeat(2, minmax(0, 17rem));
+}
+
+.projects[data-mode="detail"] .project--phone .project__media {
+    grid-template-columns: repeat(3, minmax(0, 13rem));
+}
+
+.projects[data-mode="detail"] .project--wide .project__media {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.projects[data-mode="detail"] .project__extra:nth-child(2) {
+    margin-top: 2rem;
+}
+
+.projects[data-mode="detail"] .project h3 {
+    margin: 0.6rem 0 0.5rem;
+    font-size: clamp(2rem, 4.5vw, 3.6rem);
+}
+
+.projects[data-mode="detail"] .project__tagline {
+    display: none;
+}
+
+.projects[data-mode="detail"] .project__detail {
+    margin-top: 1.4rem;
+    max-width: 30rem;
+}
+
+/* While the images travel between modes nothing may clip them or react to the mouse */
+.projects.is-switching {
+    pointer-events: none;
+}
+
+.projects.is-switching .projects__scroller {
+    overflow: visible;
 }
 
 .section--soft {
@@ -331,14 +488,6 @@ h3 {
 .contact__social a:hover,
 .contact__social a:focus-visible {
     color: var(--accent);
-}
-
-.project-card__media img,
-.project-card__media video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
 }
 
 .site-footer {
@@ -438,6 +587,22 @@ h3 {
 
     .skills__grid {
         gap: 1.5rem;
+    }
+
+    .projects__head {
+        padding-top: 5rem;
+    }
+
+    .projects[data-mode="carousel"] .project__main {
+        height: min(46svh, 24rem);
+    }
+
+    .projects[data-mode="detail"] .project {
+        grid-template-columns: 1fr;
+    }
+
+    .projects[data-mode="detail"] .project:nth-child(even) .project__body {
+        order: 0;
     }
 
     .skills .list {

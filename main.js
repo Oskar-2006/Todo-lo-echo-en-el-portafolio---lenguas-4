@@ -45,13 +45,20 @@ function initReveal() {
     });
 }
 
-// Projects: the section is pinned and vertical scroll moves the track sideways
-function initProjects() {
+// Projects, carousel mode on wide screens: the section is pinned and vertical scroll moves the row sideways.
+// On narrow screens the row is swiped by hand and CSS scroll-snap centers the cards.
+const wideScreen = window.matchMedia("(min-width: 761px)");
+let carouselTween = null;
+
+function buildCarousel() {
     const section = document.querySelector("#projects");
+    if (carouselTween || section.dataset.mode !== "carousel" || !wideScreen.matches) return;
+
     const track = section.querySelector(".projects__track");
     const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
 
-    gsap.to(track, {
+    section.classList.add("is-pinned");
+    carouselTween = gsap.to(track, {
         x: () => -distance(),
         ease: "none",
         scrollTrigger: {
@@ -63,6 +70,135 @@ function initProjects() {
             invalidateOnRefresh: true,
             anticipatePin: 1,
         },
+    });
+}
+
+function destroyCarousel() {
+    if (!carouselTween) return;
+    const section = document.querySelector("#projects");
+    carouselTween.scrollTrigger.kill(true);
+    carouselTween.kill();
+    carouselTween = null;
+    gsap.set(section.querySelector(".projects__track"), { clearProps: "transform" });
+    section.classList.remove("is-pinned");
+}
+
+// When scrolling stops between two cards for a moment, slide to the nearest one
+function centerNearestCard() {
+    const trigger = carouselTween?.scrollTrigger;
+    if (!trigger || !trigger.isActive) return;
+
+    const track = document.querySelector("#projects .projects__track");
+    const trackLeft = track.getBoundingClientRect().left;
+    const distance = Math.max(1, track.scrollWidth - window.innerWidth);
+    const stops = [...track.children].map((card) => {
+        const rect = card.getBoundingClientRect();
+        const center = rect.left - trackLeft + rect.width / 2;
+        return Math.min(1, Math.max(0, (center - window.innerWidth / 2) / distance));
+    });
+    const nearest = stops.reduce((best, stop) => (Math.abs(stop - trigger.progress) < Math.abs(best - trigger.progress) ? stop : best));
+    const target = trigger.start + nearest * (trigger.end - trigger.start);
+
+    if (Math.abs(target - window.scrollY) < 2) return;
+    if (lenis) lenis.scrollTo(target, { duration: 0.8 });
+    else window.scrollTo({ top: target, behavior: "smooth" });
+}
+
+function initCarouselSnap() {
+    let idle = 0;
+    window.addEventListener("scroll", () => {
+        clearTimeout(idle);
+        idle = setTimeout(centerNearestCard, 1500);
+    }, { passive: true });
+}
+
+function scrollToInstantly(top) {
+    if (lenis) lenis.scrollTo(top, { immediate: true, force: true });
+    else window.scrollTo(0, top);
+}
+
+// The main images gather into a stack in the middle of the screen and then deal out to their new places.
+// first / last: where each image was before the switch and where it sits after it.
+function flyImages(section, images, first, last) {
+    const stackWidth = Math.min(window.innerWidth * 0.24, 240);
+    const middle = (images.length - 1) / 2;
+
+    section.classList.add("is-switching");
+    lenis?.stop();
+
+    const timeline = gsap.timeline({
+        onComplete: () => {
+            gsap.set(images, { clearProps: "transform,zIndex,position" });
+            section.classList.remove("is-switching");
+            lenis?.start();
+        },
+    });
+
+    images.forEach((image, index) => {
+        const from = first[index];
+        const to = last[index];
+        const stackScale = stackWidth / to.width;
+        const fan = index - middle;
+
+        gsap.set(image, {
+            position: "relative",
+            zIndex: 20 + index,
+            transformOrigin: "top left",
+            x: from.left - to.left,
+            y: from.top - to.top,
+            scale: from.width / to.width,
+        });
+        timeline
+            .to(image, {
+                x: window.innerWidth / 2 - stackWidth / 2 - to.left + fan * 22,
+                y: window.innerHeight / 2 - (to.height * stackScale) / 2 - to.top + Math.abs(fan) * 10,
+                scale: stackScale,
+                rotation: fan * 4,
+                duration: 0.7,
+                ease: "power3.inOut",
+            }, index * 0.05)
+            .to(image, { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.9, ease: "power3.out" }, 0.9 + index * 0.08);
+    });
+
+    timeline.from(section.querySelectorAll(".project__body, .project__extra"), {
+        opacity: 0,
+        y: 18,
+        duration: 0.5,
+        stagger: 0.04,
+        clearProps: "opacity,transform",
+    }, 1.1);
+}
+
+// Works without the libraries too: then the mode just changes, with no flight
+function initProjectsToggle(animated) {
+    const section = document.querySelector("#projects");
+    const button = section.querySelector(".projects__toggle");
+    const images = [...section.querySelectorAll(".project__main")];
+    const rects = () => images.map((image) => image.getBoundingClientRect());
+
+    button.addEventListener("click", () => {
+        const next = section.dataset.mode === "carousel" ? "detail" : "carousel";
+        const first = rects();
+
+        if (animated) destroyCarousel();
+        section.dataset.mode = next;
+        button.textContent = next === "carousel" ? button.dataset.labelDetail : button.dataset.labelCarousel;
+        button.setAttribute("aria-pressed", String(next === "detail"));
+        section.querySelector(".projects__scroller").scrollLeft = 0;
+
+        if (animated) {
+            buildCarousel();
+            ScrollTrigger.refresh();
+        }
+        scrollToInstantly(section.getBoundingClientRect().top + window.scrollY);
+        if (animated) flyImages(section, images, first, rects());
+    });
+
+    if (!animated) return;
+    wideScreen.addEventListener("change", () => {
+        destroyCarousel();
+        buildCarousel();
+        ScrollTrigger.refresh();
     });
 }
 
@@ -121,14 +257,17 @@ function initCursor() {
 }
 
 function initMotion() {
-    if (!hasLibs || reducedMotion) return;
+    const animated = hasLibs && !reducedMotion;
+    initProjectsToggle(animated);
+    if (!animated) return;
 
     root.classList.add("js");
     gsap.registerPlugin(ScrollTrigger);
 
     initScroll();
     // Pin first, so later triggers measure the right positions
-    initProjects();
+    buildCarousel();
+    initCarouselSnap();
     initReveal();
     initCursor();
 

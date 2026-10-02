@@ -53,30 +53,48 @@ function renderAbout({ about }) {
                 about.note ? h("p", { class: "muted" }, about.note) : null)));
 }
 
-function renderProject(item) {
-    const media = h("div", { class: "project-card__media" }, mediaElement({ video: item.video, image: item.image, alt: item.name }));
-    const body = [
-        media,
-        h("h3", {}, item.name),
-        item.description ? h("p", { class: "muted" }, item.description) : null,
-        item.role ? h("p", { class: "muted" }, `Mi parte: ${item.role}`) : null,
-    ];
-    return item.link
-        ? h("a", { class: "project-card", href: item.link, target: "_blank", rel: "noopener", "data-cursor": item.cursor }, ...body)
-        : h("article", { class: "project-card", "data-cursor": item.cursor }, ...body);
+function renderFigure(className, { src, alt }, extra = {}) {
+    return h("figure", { class: className, ...extra }, h("img", { src, alt, loading: "lazy" }));
 }
 
-// Pinned on every screen size: vertical scroll moves the track sideways
+// One project. The carousel shows the main image, the name and the tagline;
+// the detail mode adds the extra images, the description and the facts.
+function renderProject(item, index, labels) {
+    const facts = ["role", "team", "kind"].filter((key) => item[key]);
+    return h("article", { class: `project project--${item.layout}` },
+        h("div", { class: "project__media" },
+            renderFigure("project__main", { src: item.image, alt: item.alt }, { "data-cursor": item.cursor }),
+            (item.extras ?? []).map((extra) => renderFigure("project__extra", extra))),
+        h("div", { class: "project__body" },
+            h("p", { class: "project__num" }, String(index + 1).padStart(2, "0")),
+            h("h3", {}, item.name),
+            h("p", { class: "project__type" }, item.type),
+            h("p", { class: "project__tagline muted" }, item.tagline),
+            h("div", { class: "project__detail" },
+                h("p", {}, item.description),
+                h("dl", { class: "facts" },
+                    facts.map((key) => h("div", {}, h("dt", {}, labels[key]), h("dd", {}, item[key])))))));
+}
+
+// Two modes on the same markup (data-mode): "carousel" by default, "detail" on demand.
+// main.js moves the main images from one layout to the other when the button is pressed.
 function renderProjects({ projects }) {
-    return h("section", { id: "projects", class: "projects", "aria-label": "Proyectos" },
+    return h("section", { id: "projects", class: "projects", "aria-label": "Proyectos", "data-mode": "carousel" },
         h("div", { class: "projects__pin" },
-            h("div", { class: "projects__track" },
-                h("div", { class: "projects__intro" },
+            h("div", { class: "projects__head" },
+                h("div", {},
                     h("p", { class: "label" }, projects.label),
-                    h("h2", {}, projects.title),
-                    projects.hint ? h("p", { class: "muted" }, projects.hint) : null),
-                projects.items.map(renderProject),
-                projects.outro ? h("div", { class: "projects__outro" }, h("p", { class: "muted" }, projects.outro)) : null)));
+                    h("h2", {}, projects.title)),
+                h("button", {
+                    type: "button",
+                    class: "button projects__toggle",
+                    "aria-pressed": "false",
+                    "data-label-detail": projects.toggle.detail,
+                    "data-label-carousel": projects.toggle.carousel,
+                }, projects.toggle.detail)),
+            h("div", { class: "projects__scroller" },
+                h("div", { class: "projects__track" },
+                    projects.items.map((item, index) => renderProject(item, index, projects.facts))))));
 }
 
 function renderList(group, extraClass = "") {

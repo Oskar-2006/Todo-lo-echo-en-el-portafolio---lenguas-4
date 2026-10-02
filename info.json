@@ -43,26 +43,72 @@
     "projects": {
         "label": "02 · Proyectos",
         "title": "Trabajo seleccionado",
-        "hint": "Sigue bajando para recorrerlos →",
-        "outro": "Más proyectos próximamente.",
+        "toggle": { "detail": "Ver en detalle", "carousel": "Volver al carrusel" },
+        "facts": { "role": "Mi parte", "team": "Equipo", "kind": "Tipo" },
         "items": [
             {
-                "name": "Proyecto 1",
-                "description": "Próximamente.",
-                "role": "",
-                "image": "",
-                "video": "",
-                "link": "",
-                "cursor": "Ver proyecto"
+                "name": "Llaves 3D",
+                "type": "Modelado y animación · Blender",
+                "tagline": "Una llave por área de estudio.",
+                "description": "Una llave por área de estudio para un sitio de seguros educativos: el símbolo de cada carrera vive en la cabeza de la llave.",
+                "role": "Modelado, rig, animación y materiales.",
+                "team": "",
+                "kind": "Propuesta para concurso universitario, 2026.",
+                "layout": "render",
+                "image": "objects/llave-juridica.webp",
+                "alt": "Llave 3D con una balanza dentro de un aro",
+                "extras": [
+                    { "src": "objects/llave-ingenieria.webp", "alt": "Llave 3D con un engranaje y un átomo" }
+                ],
+                "cursor": "Hecha en Blender"
             },
             {
-                "name": "Proyecto 2",
-                "description": "Próximamente.",
-                "role": "",
-                "image": "",
-                "video": "",
-                "link": "",
-                "cursor": "Ver proyecto"
+                "name": "Smart-ket",
+                "type": "Diseño UX/UI · Figma",
+                "tagline": "Compara precios y arma tu lista de compras.",
+                "description": "App móvil que compara precios entre supermercados y arma la lista de compras, incluso a partir de una foto de la nevera.",
+                "role": "Mapa del sitio, flujo de usuario, wireframes y toda la sección de la nevera.",
+                "team": "Ana María Salavarrieta, Fabián Ascedo y yo.",
+                "kind": "Proyecto académico.",
+                "layout": "phone",
+                "image": "objects/smartket-home.png",
+                "alt": "Pantalla de inicio de Smart-ket con promociones y productos",
+                "extras": [
+                    { "src": "objects/smartket-nevera.png", "alt": "Lista para llenar la nevera en Smart-ket" },
+                    { "src": "objects/smartket-listas.png", "alt": "Pantalla de listas guardadas en Smart-ket" }
+                ],
+                "cursor": "Diseño en Figma"
+            },
+            {
+                "name": "SmartFix",
+                "type": "Diseño UX/UI · Figma",
+                "tagline": "Qué ver esta noche, según tus gustos.",
+                "description": "App para descubrir películas y series según tus gustos, con comunidad, reseñas y un chatbot que recomienda qué ver.",
+                "role": "Wireframes de 13 pantallas y la pantalla final de la encuesta de gustos.",
+                "team": "Valentina Torres, Sebastián Aguilar, Juan Felipe, Gabriel, Miguel y yo.",
+                "kind": "Proyecto académico.",
+                "layout": "phone",
+                "image": "objects/smartfix-encuesta-wireframe.png",
+                "alt": "Wireframe de la encuesta de gustos de SmartFix",
+                "extras": [
+                    { "src": "objects/smartfix-home-wireframe.png", "alt": "Wireframe del inicio de SmartFix" },
+                    { "src": "objects/smartfix-chatbot-wireframe.png", "alt": "Wireframe del chatbot de SmartFix" }
+                ],
+                "cursor": "Wireframes"
+            },
+            {
+                "name": "Juego de memoria",
+                "type": "Web · HTML, CSS y JavaScript",
+                "tagline": "Catálogo de héroes y juego de parejas.",
+                "description": "Catálogo de héroes con filtros por bando, fuerza y poder, y un juego de parejas con registro de jugadores, tiempo, intentos y récord.",
+                "role": "Diseño y dirección; programado con asistencia de IA, sin librerías.",
+                "team": "",
+                "kind": "Ejercicio de clase.",
+                "layout": "wide",
+                "image": "objects/memoria-catalogo.png",
+                "alt": "Catálogo de héroes con tarjetas y filtros",
+                "extras": [],
+                "cursor": "Sitio web"
             }
         ]
     },

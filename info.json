@@ -84,17 +84,17 @@
                 "type": "Diseño UX/UI · Figma",
                 "tagline": "Qué ver esta noche, según tus gustos.",
                 "description": "App para descubrir películas y series según tus gustos, con comunidad, reseñas y un chatbot que recomienda qué ver.",
-                "role": "Wireframes de 13 pantallas y la pantalla final de la encuesta de gustos.",
+                "role": "Wireframes de 13 pantallas y la encuesta de gustos, del wireframe a la pantalla final.",
                 "team": "Valentina Torres, Sebastián Aguilar, Juan Felipe, Gabriel, Miguel y yo.",
                 "kind": "Proyecto académico.",
                 "layout": "phone",
-                "image": "objects/smartfix-encuesta-wireframe.png",
-                "alt": "Wireframe de la encuesta de gustos de SmartFix",
+                "image": "objects/smartfix-encuesta.png",
+                "alt": "Pantalla final de la encuesta de gustos de SmartFix",
                 "extras": [
-                    { "src": "objects/smartfix-home-wireframe.png", "alt": "Wireframe del inicio de SmartFix" },
-                    { "src": "objects/smartfix-chatbot-wireframe.png", "alt": "Wireframe del chatbot de SmartFix" }
+                    { "src": "objects/smartfix-encuesta-wireframe.png", "alt": "Wireframe de la misma encuesta" },
+                    { "src": "objects/smartfix-home-wireframe.png", "alt": "Wireframe del inicio de SmartFix" }
                 ],
-                "cursor": "Wireframes"
+                "cursor": "Diseño en Figma"
             },
             {
                 "name": "Juego de memoria",

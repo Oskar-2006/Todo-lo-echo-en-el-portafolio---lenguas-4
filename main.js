@@ -48,9 +48,24 @@ function initReveal() {
 // On narrow screens the row is swiped by hand and CSS scroll-snap centers the cards.
 const wideScreen = window.matchMedia("(min-width: 761px)");
 let carouselTween = null;
+let centerTimer = 0;
+
+// Side room so the first and the last card can reach the middle of the screen, whatever their width
+function fitTrackPadding() {
+    const section = document.querySelector("#projects");
+    const track = section.querySelector(".projects__track");
+    if (section.dataset.mode !== "carousel") {
+        track.style.paddingLeft = track.style.paddingRight = "";
+        return;
+    }
+    const room = (card) => `${Math.max(20, (window.innerWidth - card.offsetWidth) / 2)}px`;
+    track.style.paddingLeft = room(track.firstElementChild);
+    track.style.paddingRight = room(track.lastElementChild);
+}
 
 function buildCarousel() {
     const section = document.querySelector("#projects");
+    fitTrackPadding();
     if (carouselTween || section.dataset.mode !== "carousel" || !wideScreen.matches) return;
 
     const track = section.querySelector(".projects__track");
@@ -68,12 +83,18 @@ function buildCarousel() {
             scrub: true,
             invalidateOnRefresh: true,
             anticipatePin: 1,
+            // When scrolling stops between two cards for a moment, slide to the nearest one
+            onUpdate: () => {
+                clearTimeout(centerTimer);
+                centerTimer = setTimeout(centerNearestCard, 1500);
+            },
         },
     });
 }
 
 function destroyCarousel() {
     if (!carouselTween) return;
+    clearTimeout(centerTimer);
     const section = document.querySelector("#projects");
     carouselTween.scrollTrigger.kill(true);
     carouselTween.kill();
@@ -82,7 +103,6 @@ function destroyCarousel() {
     section.classList.remove("is-pinned");
 }
 
-// When scrolling stops between two cards for a moment, slide to the nearest one
 function centerNearestCard() {
     const trigger = carouselTween?.scrollTrigger;
     if (!trigger || !trigger.isActive) return;
@@ -101,14 +121,6 @@ function centerNearestCard() {
     if (Math.abs(target - window.scrollY) < 2) return;
     if (lenis) lenis.scrollTo(target, { duration: 0.8 });
     else window.scrollTo({ top: target, behavior: "smooth" });
-}
-
-function initCarouselSnap() {
-    let idle = 0;
-    window.addEventListener("scroll", () => {
-        clearTimeout(idle);
-        idle = setTimeout(centerNearestCard, 1500);
-    }, { passive: true });
 }
 
 function scrollToInstantly(top) {
@@ -183,8 +195,10 @@ function initProjectsToggle(animated) {
         section.dataset.mode = next;
         button.textContent = next === "carousel" ? button.dataset.labelDetail : button.dataset.labelCarousel;
         button.setAttribute("aria-pressed", String(next === "detail"));
+        button.animate([{ opacity: 0.35, filter: "blur(2px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 220, easing: "ease" });
         section.querySelector(".projects__scroller").scrollLeft = 0;
 
+        fitTrackPadding();
         if (animated) {
             buildCarousel();
             ScrollTrigger.refresh();
@@ -202,76 +216,20 @@ function initProjectsToggle(animated) {
     });
 }
 
-// Cursor: a dot that follows the mouse and shows a label over [data-cursor] elements
-function initCursor() {
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
-    const cursor = document.createElement("div");
-    cursor.className = "cursor";
-    cursor.setAttribute("aria-hidden", "true");
-    cursor.innerHTML = '<span class="cursor__label"></span><span class="cursor__dot"></span>';
-    document.body.append(cursor);
-    root.classList.add("has-cursor");
-
-    const label = cursor.querySelector(".cursor__label");
-    const moveX = gsap.quickTo(cursor, "x", { duration: 0.18, ease: "power3" });
-    const moveY = gsap.quickTo(cursor, "y", { duration: 0.18, ease: "power3" });
-    let lastX = 0;
-    let lastY = 0;
-    let visible = false;
-
-    const showLabelFor = (element) => {
-        const target = element?.closest?.("[data-cursor]");
-        if (target) label.textContent = target.dataset.cursor;
-        cursor.classList.toggle("has-label", Boolean(target));
-    };
-
-    window.addEventListener("pointermove", (event) => {
-        lastX = event.clientX;
-        lastY = event.clientY;
-        if (!visible) {
-            gsap.set(cursor, { x: lastX, y: lastY });
-            cursor.classList.add("is-visible");
-            visible = true;
-        }
-        moveX(lastX);
-        moveY(lastY);
-    });
-
-    document.addEventListener("pointerover", (event) => showLabelFor(event.target));
-    root.addEventListener("pointerleave", () => {
-        cursor.classList.remove("is-visible");
-        visible = false;
-    });
-
-    // While scrolling, content moves under a still mouse and no pointer event fires
-    let queued = false;
-    window.addEventListener("scroll", () => {
-        if (queued || !visible) return;
-        queued = true;
-        requestAnimationFrame(() => {
-            queued = false;
-            showLabelFor(document.elementFromPoint(lastX, lastY));
-        });
-    }, { passive: true });
-}
-
 // Marks the nav link of the section on screen: the last one whose top has passed a line just below the header.
 // A clicked link stays marked until the visitor scrolls by hand, because the last sections can never reach that line.
 function initCurrentSection() {
     const links = new Map([...document.querySelectorAll('.site-header nav a[href^="#"]')].map((link) => [link.getAttribute("href").slice(1), link]));
-    const sections = [...document.querySelectorAll("main > section[id]")].filter((section) => links.has(section.id));
+    // Not "main > section": the pinned carousel sits inside a wrapper that ScrollTrigger adds
+    const sections = [...document.querySelectorAll("main section[id]")].filter((section) => links.has(section.id));
     let chosen = null;
-    let queued = false;
 
     const mark = (id) => links.forEach((link, key) => link.setAttribute("aria-current", String(key === id)));
-    const update = () => {
-        queued = false;
+    const update = (page) => {
         if (chosen) return mark(chosen);
         const line = window.innerHeight * 0.18;
-        const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
         const passed = sections.filter((section) => section.getBoundingClientRect().top <= line);
-        mark(atBottom ? sections.at(-1).id : passed.at(-1)?.id);
+        mark(page.progress > 0.999 ? sections.at(-1).id : passed.at(-1)?.id);
     };
 
     links.forEach((link, id) => link.addEventListener("click", () => {
@@ -279,19 +237,15 @@ function initCurrentSection() {
         mark(id);
     }));
     ["wheel", "touchmove", "keydown"].forEach((type) => window.addEventListener(type, () => { chosen = null; }, { passive: true }));
-    window.addEventListener("scroll", () => {
-        if (queued) return;
-        queued = true;
-        requestAnimationFrame(update);
-    }, { passive: true });
-    update();
+    ScrollTrigger.create({ start: 0, end: "max", onUpdate: update, onRefresh: update });
 }
 
 function initMotion() {
     // The motion runs for every visitor, including those whose system asks for reduced motion (owner's decision)
     const animated = hasLibs;
     initProjectsToggle(animated);
-    initCurrentSection();
+    fitTrackPadding();
+    window.addEventListener("resize", fitTrackPadding);
     if (!animated) return;
 
     root.classList.add("js");
@@ -300,9 +254,8 @@ function initMotion() {
     initScroll();
     // Pin first, so later triggers measure the right positions
     buildCarousel();
-    initCarouselSnap();
     initReveal();
-    initCursor();
+    initCurrentSection();
 
     ScrollTrigger.refresh();
     document.fonts?.ready.then(() => ScrollTrigger.refresh());

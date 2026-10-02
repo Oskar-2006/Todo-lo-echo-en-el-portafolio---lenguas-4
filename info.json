@@ -1,6 +1,5 @@
 {
     "_ayuda": "Todo el contenido de la página sale de este archivo. Los archivos (imágenes, videos, modelos) van en la carpeta objects/ y se enlazan con la ruta, por ejemplo: \"objects/mi-render.webm\". Deja un texto vacío (\"\") para ocultar ese elemento. No se pueden poner comentarios dentro de un JSON.",
-
     "site": {
         "lang": "es",
         "title": "Oskar Bohorquez | Portafolio",
@@ -8,30 +7,44 @@
         "logo": "OB",
         "footer": "© 2026 Oskar Bohorquez"
     },
-
     "nav": [
-        { "label": "Sobre mí", "target": "#about" },
-        { "label": "Proyectos", "target": "#projects" },
-        { "label": "Habilidades", "target": "#skills" },
-        { "label": "Contacto", "target": "#contact" }
+        {
+            "label": "Sobre mí",
+            "target": "#about"
+        },
+        {
+            "label": "Proyectos",
+            "target": "#projects"
+        },
+        {
+            "label": "Habilidades",
+            "target": "#skills"
+        },
+        {
+            "label": "Contacto",
+            "target": "#contact"
+        }
     ],
-
     "hero": {
-        "label": "Creación Digital · Semestre 4",
-        "name": ["Oskar", "Bohorquez"],
+        "label": "Estudiante de Creación Digital",
+        "name": [
+            "Oskar",
+            "Bohorquez"
+        ],
         "tagline": "Modelo, animo en 3D, diseño y construyo sitios web.",
-        "cta": { "text": "Ver proyectos", "target": "#projects", "cursor": "Bajar" },
+        "cta": {
+            "text": "Ver proyectos",
+            "target": "#projects"
+        },
         "media": {
-            "type": "image",
-            "src": "objects/llave-ingenieria.webp",
+            "type": "video",
+            "src": "objects/llave-loop.mp4",
+            "poster": "objects/llave-ingenieria.webp",
             "alt": "Llave 3D con cabeza de engranaje y un átomo en el centro, modelada en Blender",
-            "placeholder": "Render / animación aquí",
-            "cursor": "Modelada en Blender"
+            "placeholder": "Render / animación aquí"
         }
     },
-
     "about": {
-        "label": "01 · Sobre mí",
         "title": "3D, animación y código.",
         "paragraphs": [
             "Soy estudiante de Creación Digital en la Universidad El Bosque (Colombia). La carrera se enfoca en desarrollar productos digitales con herramientas modernas, incluido el manejo de IA.",
@@ -39,16 +52,21 @@
         ],
         "note": "Viajo a Bogotá por temas de estudio."
     },
-
     "projects": {
-        "label": "02 · Proyectos",
         "title": "Trabajo seleccionado",
-        "toggle": { "detail": "Ver en detalle", "carousel": "Volver al carrusel" },
-        "facts": { "role": "Mi parte", "team": "Equipo", "kind": "Tipo" },
+        "toggle": {
+            "detail": "Ver en detalle",
+            "carousel": "Volver al carrusel"
+        },
+        "facts": {
+            "role": "Mi parte",
+            "team": "Equipo",
+            "kind": "Tipo"
+        },
         "items": [
             {
                 "name": "Llaves 3D",
-                "type": "Modelado y animación · Blender",
+                "type": "Modelado y animación en Blender",
                 "tagline": "Una llave por área de estudio.",
                 "description": "Una llave por área de estudio para un sitio de seguros educativos: el símbolo de cada carrera vive en la cabeza de la llave.",
                 "role": "Modelado, rig, animación y materiales.",
@@ -58,13 +76,15 @@
                 "image": "objects/llave-juridica.webp",
                 "alt": "Llave 3D con una balanza dentro de un aro",
                 "extras": [
-                    { "src": "objects/llave-ingenieria.webp", "alt": "Llave 3D con un engranaje y un átomo" }
-                ],
-                "cursor": "Hecha en Blender"
+                    {
+                        "src": "objects/llave-ingenieria.webp",
+                        "alt": "Llave 3D con un engranaje y un átomo"
+                    }
+                ]
             },
             {
                 "name": "Smart-ket",
-                "type": "Diseño UX/UI · Figma",
+                "type": "Diseño UX/UI en Figma",
                 "tagline": "Compara precios y arma tu lista de compras.",
                 "description": "App móvil que compara precios entre supermercados y arma la lista de compras, incluso a partir de una foto de la nevera.",
                 "role": "Mapa del sitio, flujo de usuario, wireframes y toda la sección de la nevera.",
@@ -74,14 +94,19 @@
                 "image": "objects/smartket-home.png",
                 "alt": "Pantalla de inicio de Smart-ket con promociones y productos",
                 "extras": [
-                    { "src": "objects/smartket-nevera.png", "alt": "Lista para llenar la nevera en Smart-ket" },
-                    { "src": "objects/smartket-listas.png", "alt": "Pantalla de listas guardadas en Smart-ket" }
-                ],
-                "cursor": "Diseño en Figma"
+                    {
+                        "src": "objects/smartket-nevera.png",
+                        "alt": "Lista para llenar la nevera en Smart-ket"
+                    },
+                    {
+                        "src": "objects/smartket-listas.png",
+                        "alt": "Pantalla de listas guardadas en Smart-ket"
+                    }
+                ]
             },
             {
                 "name": "SmartFix",
-                "type": "Diseño UX/UI · Figma",
+                "type": "Diseño UX/UI en Figma",
                 "tagline": "Qué ver esta noche, según tus gustos.",
                 "description": "App para descubrir películas y series según tus gustos, con comunidad, reseñas y un chatbot que recomienda qué ver.",
                 "role": "Wireframes de 13 pantallas y la encuesta de gustos, del wireframe a la pantalla final.",
@@ -91,14 +116,19 @@
                 "image": "objects/smartfix-encuesta.png",
                 "alt": "Pantalla final de la encuesta de gustos de SmartFix",
                 "extras": [
-                    { "src": "objects/smartfix-encuesta-wireframe.png", "alt": "Wireframe de la misma encuesta" },
-                    { "src": "objects/smartfix-home-wireframe.png", "alt": "Wireframe del inicio de SmartFix" }
-                ],
-                "cursor": "Diseño en Figma"
+                    {
+                        "src": "objects/smartfix-encuesta-wireframe.png",
+                        "alt": "Wireframe de la misma encuesta"
+                    },
+                    {
+                        "src": "objects/smartfix-home-wireframe.png",
+                        "alt": "Wireframe del inicio de SmartFix"
+                    }
+                ]
             },
             {
                 "name": "Juego de memoria",
-                "type": "Web · HTML, CSS y JavaScript",
+                "type": "Web con HTML, CSS y JavaScript",
                 "tagline": "Catálogo de héroes y juego de parejas.",
                 "description": "Catálogo de héroes con filtros por bando, fuerza y poder, y un juego de parejas con registro de jugadores, tiempo, intentos y récord.",
                 "role": "Diseño y dirección; programado con asistencia de IA, sin librerías.",
@@ -107,14 +137,11 @@
                 "layout": "wide",
                 "image": "objects/memoria-partida.png",
                 "alt": "Partida del juego de memoria con tres parejas encontradas",
-                "extras": [],
-                "cursor": "Sitio web"
+                "extras": []
             }
         ]
     },
-
     "skills": {
-        "label": "03 · Habilidades",
         "skills": {
             "title": "Lo que hago",
             "items": [
@@ -137,14 +164,14 @@
             ]
         }
     },
-
     "contact": {
-        "label": "04 · Contacto",
         "title": "¿Trabajamos juntos?",
         "email": "obohorquez@unbosque.edu.co",
-        "emailCursor": "Escribir",
         "social": [
-            { "label": "GitHub", "url": "https://github.com/Oskar-2006" }
+            {
+                "label": "GitHub",
+                "url": "https://github.com/Oskar-2006"
+            }
         ]
     }
 }

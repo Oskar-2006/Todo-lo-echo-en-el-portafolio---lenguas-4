@@ -18,12 +18,7 @@ function initScroll() {
             const target = document.querySelector(link.getAttribute("href"));
             if (!target) return;
             event.preventDefault();
-            // Pinned sections (data-anchor) land near the end of their pin, once the zoom has finished
-            const pin = ScrollTrigger.getAll().find((trigger) => trigger.trigger === target && trigger.pin);
-            const destination = pin && target.dataset.anchor
-                ? pin.start + (pin.end - pin.start) * Number(target.dataset.anchor)
-                : target;
-            lenis.scrollTo(destination, { duration: 1.1 });
+            lenis.scrollTo(target, { duration: 1.1 });
         });
     });
 }
@@ -68,30 +63,6 @@ function initProjects() {
             invalidateOnRefresh: true,
             anticipatePin: 1,
         },
-    });
-}
-
-// Skills and contact: pinned, start small and blurred, zoom in while the blur clears, then hold
-function initZoomSections() {
-    document.querySelectorAll(".zoom-section").forEach((section) => {
-        const inner = section.querySelector(".zoom-section__inner");
-
-        gsap.timeline({
-            defaults: { ease: "none" },
-            scrollTrigger: {
-                trigger: section,
-                start: "top top",
-                end: "+=120%",
-                pin: true,
-                scrub: true,
-                invalidateOnRefresh: true,
-                anticipatePin: 1,
-            },
-        })
-            .fromTo(inner,
-                { scale: 0.45, filter: "blur(14px)", opacity: 0.5 },
-                { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.8 })
-            .to(inner, { duration: 0.2 });
     });
 }
 
@@ -156,9 +127,8 @@ function initMotion() {
     gsap.registerPlugin(ScrollTrigger);
 
     initScroll();
-    // Pins first, in page order, so later triggers measure the right positions
+    // Pin first, so later triggers measure the right positions
     initProjects();
-    initZoomSections();
     initReveal();
     initCursor();
 

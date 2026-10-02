@@ -89,7 +89,11 @@ h3 {
     justify-content: space-between;
     align-items: center;
     padding: 1.1rem var(--gutter);
-    background: linear-gradient(var(--bg), transparent);
+    /* Solid enough that content scrolling underneath never collides with the logo or the nav */
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
 }
 
 .logo {
@@ -106,6 +110,7 @@ h3 {
 }
 
 .site-header nav a {
+    white-space: nowrap;
     color: var(--muted);
     transition: color 0.2s;
 }
@@ -121,7 +126,8 @@ h3 {
     border-top: 1px solid var(--line);
 }
 
-.section > .label {
+.section > .label,
+.contact .label {
     margin-bottom: 1.5rem;
 }
 
@@ -133,6 +139,11 @@ h3 {
     gap: 3rem;
     align-items: center;
     padding: 7rem var(--gutter) 4rem;
+}
+
+/* Sized so each line of the name in info.json stays on one line */
+.hero h1 {
+    font-size: clamp(2rem, 4.9vw, 4.6rem);
 }
 
 .hero__text > * + * {
@@ -241,25 +252,15 @@ h3 {
     border-color: var(--accent);
 }
 
-/* Zoom sections (skills, contact): one screen tall; JS pins them and zooms the inner block in from small and blurred */
 .section--soft {
     background: var(--bg-soft);
 }
 
-.zoom-section {
-    min-height: 100svh;
+/* Contact closes the page: tall enough to stand alone, content centered */
+.contact {
+    min-height: 70svh;
     display: grid;
     align-content: center;
-    overflow: hidden;
-}
-
-.zoom-section__inner {
-    transform-origin: center;
-    will-change: transform, filter;
-}
-
-.zoom-section__inner > .label {
-    margin-bottom: 1.5rem;
 }
 
 .site-footer {
@@ -431,8 +432,17 @@ h3 {
         padding: 0.45rem 0;
     }
 
-    .site-header nav a:not(:last-child) {
-        display: none;
+    /* All four links stay visible: smaller type instead of a hidden menu */
+    .site-header nav {
+        gap: 0.7rem;
+        font-size: 0.66rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .site-header nav {
+        gap: 0.5rem;
+        font-size: 0.6rem;
     }
 }
 

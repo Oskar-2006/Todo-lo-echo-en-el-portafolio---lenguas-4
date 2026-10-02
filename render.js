@@ -85,20 +85,18 @@ function renderList(group, extraClass = "") {
         h("ul", { class: `list ${extraClass}`.trim() }, group.items.map((text) => h("li", {}, text))));
 }
 
-// Pinned: the content starts small and blurred and zooms in as you scroll (see initZoomSections)
 function renderSkills({ skills }) {
-    return h("section", { id: "skills", class: "section section--soft zoom-section skills", "data-anchor": "0.85" },
-        h("div", { class: "zoom-section__inner" },
-            h("p", { class: "label" }, skills.label),
-            h("div", { class: "skills__grid" },
-                renderList(skills.skills),
-                renderList(skills.tools, "list--mono"))));
+    return h("section", { id: "skills", class: "section section--soft skills" },
+        h("p", { class: "label", "data-reveal": true }, skills.label),
+        h("div", { class: "skills__grid", "data-reveal": true },
+            renderList(skills.skills),
+            renderList(skills.tools, "list--mono")));
 }
 
 function renderContact({ contact }) {
     const social = contact.social.filter((link) => link.url);
-    return h("section", { id: "contact", class: "section section--soft zoom-section contact", "data-anchor": "0.85" },
-        h("div", { class: "zoom-section__inner" },
+    return h("section", { id: "contact", class: "section section--soft contact" },
+        h("div", { "data-reveal": true },
             h("p", { class: "label" }, contact.label),
             h("h2", {}, contact.title),
             h("a", { class: "contact__mail", href: `mailto:${contact.email}`, "data-cursor": contact.emailCursor }, contact.email),

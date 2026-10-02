@@ -288,7 +288,7 @@ h3 {
     justify-content: space-between;
     align-items: end;
     gap: 1.5rem;
-    padding: 6rem var(--gutter) 2rem;
+    padding: 5.5rem var(--gutter) 1.5rem;
 }
 
 .projects__toggle {
@@ -307,14 +307,56 @@ h3 {
     border-radius: 14px;
 }
 
+/* Carousel focus: main.js sets --focus per card, 0 far from the centre and 1 in the middle.
+   The image scales inside its box, so the box that flies between modes never changes size. */
+.project {
+    --focus: 1;
+    --lift: 1;
+}
+
 .project__main img {
     transition: transform 0.2s var(--ease-out);
 }
 
+.projects[data-mode="carousel"] .project__main img {
+    transform: scale(calc((0.8 + 0.2 * var(--focus)) * var(--lift)));
+    transform-origin: 50% 60%;
+}
+
+.projects[data-mode="carousel"] .project__main {
+    opacity: calc(0.28 + 0.72 * var(--focus));
+}
+
+/* Only the card being presented shows its text */
+.projects[data-mode="carousel"] .project__body {
+    opacity: clamp(0, calc((var(--focus) - 0.55) * 2.6), 1);
+    transform: translateY(calc((1 - var(--focus)) * 14px));
+}
+
 @media (hover: hover) and (pointer: fine) {
-    .projects[data-mode="carousel"] .project__main:hover img {
-        transform: scale(1.02);
+    .projects[data-mode="carousel"] .project__main:hover {
+        --lift: 1.02;
     }
+}
+
+/* A thin line under the heading that fills as the row advances */
+.projects__progress {
+    display: none;
+    height: 2px;
+    margin: 0 var(--gutter);
+    background: color-mix(in srgb, var(--line) 45%, transparent);
+}
+
+.projects[data-mode="carousel"] .projects__progress {
+    display: block;
+}
+
+.projects__progress span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
 }
 
 /* Screenshots fade out at the bottom so they sit on the page like the transparent 3D renders do */
@@ -418,19 +460,31 @@ h3 {
 }
 
 .projects[data-mode="carousel"] .project__main {
-    height: min(50svh, 30rem);
-    margin-bottom: 1.2rem;
+    height: min(54svh, 34rem);
+    margin-bottom: 1.4rem;
 }
 
 .projects[data-mode="carousel"] .project__extra,
-.projects[data-mode="carousel"] .project__type,
 .projects[data-mode="carousel"] .project__detail {
     display: none;
 }
 
+/* Caption of the presented card: name first and large, then what kind of work it is, then the line */
+.projects[data-mode="carousel"] .project__body {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 17rem;
+}
+
 .projects[data-mode="carousel"] .project h3 {
-    margin: 0.3rem 0;
+    font-size: clamp(1.6rem, 2.6vw, 2.3rem);
     white-space: nowrap;
+}
+
+/* Cards far from the middle dissolve at the edges of the screen instead of being cut */
+.projects[data-mode="carousel"].is-pinned:not(.is-switching) .projects__scroller {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
 }
 
 /* Detail: one row per project, image and text side by side, alternating */
@@ -672,6 +726,14 @@ h3 {
 
     .projects[data-mode="carousel"] .project__main {
         height: min(46svh, 24rem);
+    }
+
+    .projects[data-mode="carousel"] .project__body {
+        min-width: 0;
+    }
+
+    .projects[data-mode="carousel"] .project h3 {
+        white-space: normal;
     }
 
     .projects[data-mode="detail"] .project {

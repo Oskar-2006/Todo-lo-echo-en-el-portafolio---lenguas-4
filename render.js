@@ -92,6 +92,7 @@ function renderProjects({ projects }) {
                     "data-label-detail": projects.toggle.detail,
                     "data-label-carousel": projects.toggle.carousel,
                 }, projects.toggle.detail)),
+            h("div", { class: "projects__progress", "aria-hidden": "true" }, h("span", {})),
             h("div", { class: "projects__scroller" },
                 h("div", { class: "projects__track" },
                     projects.items.map((item) => renderProject(item, projects.facts))))));

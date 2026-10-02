@@ -61,6 +61,41 @@ function fitTrackPadding() {
     const room = (card) => `${Math.max(20, (window.innerWidth - card.offsetWidth) / 2)}px`;
     track.style.paddingLeft = room(track.firstElementChild);
     track.style.paddingRight = room(track.lastElementChild);
+    updateFocus();
+}
+
+// The card in the middle of the screen is the one being presented: full size and with its text.
+// Each card gets --focus from 0 (far) to 1 (centred); the CSS turns that into scale and opacity.
+// progress: how far along the row the visitor is, for the line under the heading.
+function updateFocus(progress) {
+    const section = document.querySelector("#projects");
+    if (section.dataset.mode !== "carousel") return;
+
+    const middle = window.innerWidth / 2;
+    const reach = Math.max(320, window.innerWidth * 0.42);
+    section.querySelectorAll(".project").forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        const distance = Math.abs(rect.left + rect.width / 2 - middle);
+        card.style.setProperty("--focus", Math.max(0, 1 - distance / reach).toFixed(3));
+    });
+
+    const scroller = section.querySelector(".projects__scroller");
+    const travelled = progress ?? (scroller.scrollWidth > scroller.clientWidth ? scroller.scrollLeft / (scroller.scrollWidth - scroller.clientWidth) : 0);
+    section.querySelector(".projects__progress span").style.transform = `scaleX(${travelled.toFixed(4)})`;
+}
+
+// Narrow screens swipe the row by hand, so the focus follows that scroller
+function initSwipeFocus() {
+    const scroller = document.querySelector("#projects .projects__scroller");
+    let queued = false;
+    scroller.addEventListener("scroll", () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+            queued = false;
+            if (!carouselTween) updateFocus();
+        });
+    }, { passive: true });
 }
 
 function buildCarousel() {
@@ -84,10 +119,12 @@ function buildCarousel() {
             invalidateOnRefresh: true,
             anticipatePin: 1,
             // When scrolling stops between two cards for a moment, slide to the nearest one
-            onUpdate: () => {
+            onUpdate: (self) => {
+                updateFocus(self.progress);
                 clearTimeout(centerTimer);
                 centerTimer = setTimeout(centerNearestCard, 1500);
             },
+            onRefresh: (self) => updateFocus(self.progress),
         },
     });
 }
@@ -245,6 +282,7 @@ function initMotion() {
     const animated = hasLibs;
     initProjectsToggle(animated);
     fitTrackPadding();
+    initSwipeFocus();
     window.addEventListener("resize", fitTrackPadding);
     if (!animated) return;
 

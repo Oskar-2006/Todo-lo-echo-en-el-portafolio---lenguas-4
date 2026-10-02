@@ -105,8 +105,8 @@
                 "team": "",
                 "kind": "Ejercicio de clase.",
                 "layout": "wide",
-                "image": "objects/memoria-catalogo.png",
-                "alt": "Catálogo de héroes con tarjetas y filtros",
+                "image": "objects/memoria-partida.png",
+                "alt": "Partida del juego de memoria con tres parejas encontradas",
                 "extras": [],
                 "cursor": "Sitio web"
             }

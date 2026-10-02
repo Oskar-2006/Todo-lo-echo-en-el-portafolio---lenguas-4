@@ -312,6 +312,12 @@ h3 {
     mask-image: linear-gradient(#000 62%, transparent);
 }
 
+/* A wide capture loses too much with the long fade: only its last strip dissolves */
+.project--wide img {
+    -webkit-mask-image: linear-gradient(#000 82%, transparent);
+    mask-image: linear-gradient(#000 82%, transparent);
+}
+
 .project--render img {
     object-fit: contain;
     border-radius: 0;

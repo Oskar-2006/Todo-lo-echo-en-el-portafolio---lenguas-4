@@ -18,7 +18,7 @@
 
     "hero": {
         "label": "Creación Digital · Semestre 4",
-        "name": ["Oskar Alejandro", "Bohorquez Vallejo"],
+        "name": ["Oskar", "Bohorquez"],
         "tagline": "Flexible y adaptable a cualquier proyecto: puedo enfocarme en una sola rama o coordinar y comunicar entre varias.",
         "cta": { "text": "Ver proyectos", "target": "#projects", "cursor": "Bajar" },
         "media": {
@@ -94,10 +94,10 @@
     "contact": {
         "label": "04 · Contacto",
         "title": "¿Trabajamos juntos?",
-        "email": "oskarbohorquez2006@gmail.com",
+        "email": "obohorquez@unbosque.edu.co",
         "emailCursor": "Escribir",
         "social": [
-            { "label": "GitHub", "url": "" }
+            { "label": "GitHub", "url": "https://github.com/Oskar-2006" }
         ]
     }
 }

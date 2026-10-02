@@ -141,11 +141,6 @@ h3 {
     padding: 7rem var(--gutter) 4rem;
 }
 
-/* Sized so each line of the name in info.json stays on one line */
-.hero h1 {
-    font-size: clamp(2rem, 4.9vw, 4.6rem);
-}
-
 .hero__text > * + * {
     margin-top: 1.5rem;
 }

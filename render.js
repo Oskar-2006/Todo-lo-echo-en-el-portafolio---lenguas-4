@@ -97,18 +97,17 @@ function renderProjects({ projects }) {
                     projects.items.map((item, index) => renderProject(item, index, projects.facts))))));
 }
 
-function renderList(group, extraClass = "") {
-    return h("div", {},
-        h("h2", {}, group.title),
-        h("ul", { class: `list ${extraClass}`.trim() }, group.items.map((text) => h("li", {}, text))));
-}
-
+// What I do as a short list; the tools as one big line of text
 function renderSkills({ skills }) {
     return h("section", { id: "skills", class: "section section--soft skills" },
         h("p", { class: "label", "data-reveal": true }, skills.label),
         h("div", { class: "skills__grid", "data-reveal": true },
-            renderList(skills.skills),
-            renderList(skills.tools, "list--mono")));
+            h("div", {},
+                h("h2", { class: "skills__title" }, skills.skills.title),
+                h("ul", { class: "skills__does" }, skills.skills.items.map((text) => h("li", {}, text)))),
+            h("div", {},
+                h("h2", { class: "skills__title" }, skills.tools.title),
+                h("p", { class: "skills__tools" }, skills.tools.items.flatMap((text) => [h("span", {}, text), " "])))));
 }
 
 function renderContact({ contact }) {

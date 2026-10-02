@@ -28,9 +28,9 @@ function initReveal() {
     gsap.to("#hero [data-reveal]", {
         opacity: 1,
         y: 0,
-        duration: 0.9,
+        duration: 0.6,
         ease: "power3.out",
-        stagger: 0.12,
+        stagger: 0.07,
     });
 
     document.querySelectorAll("[data-reveal]").forEach((item) => {
@@ -38,7 +38,7 @@ function initReveal() {
         gsap.to(item, {
             opacity: 1,
             y: 0,
-            duration: 0.8,
+            duration: 0.55,
             ease: "power3.out",
             scrollTrigger: { trigger: item, start: "top 88%", once: true },
         });
@@ -154,19 +154,19 @@ function flyImages(section, images, first, last) {
                 y: window.innerHeight / 2 - (to.height * stackScale) / 2 - to.top + Math.abs(fan) * 10,
                 scale: stackScale,
                 rotation: fan * 4,
-                duration: 0.7,
+                duration: 0.5,
                 ease: "power3.inOut",
-            }, index * 0.05)
-            .to(image, { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.9, ease: "power3.out" }, 0.9 + index * 0.08);
+            }, index * 0.04)
+            .to(image, { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.7, ease: "power3.out" }, 0.62 + index * 0.06);
     });
 
     timeline.from(section.querySelectorAll(".project__body, .project__extra"), {
         opacity: 0,
         y: 18,
-        duration: 0.5,
-        stagger: 0.04,
+        duration: 0.45,
+        stagger: 0.05,
         clearProps: "opacity,transform",
-    }, 1.1);
+    }, 0.8);
 }
 
 // Works without the libraries too: then the mode just changes, with no flight
@@ -192,6 +192,7 @@ function initProjectsToggle(animated) {
         }
         scrollToInstantly(section.getBoundingClientRect().top + window.scrollY);
         if (animated) flyImages(section, images, first, rects());
+        else section.querySelector(".projects__track").animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: "ease" });
     });
 
     if (!animated) return;
@@ -256,9 +257,41 @@ function initCursor() {
     }, { passive: true });
 }
 
+// Marks the nav link of the section on screen: the last one whose top has passed a line just below the header.
+// A clicked link stays marked until the visitor scrolls by hand, because the last sections can never reach that line.
+function initCurrentSection() {
+    const links = new Map([...document.querySelectorAll('.site-header nav a[href^="#"]')].map((link) => [link.getAttribute("href").slice(1), link]));
+    const sections = [...document.querySelectorAll("main > section[id]")].filter((section) => links.has(section.id));
+    let chosen = null;
+    let queued = false;
+
+    const mark = (id) => links.forEach((link, key) => link.setAttribute("aria-current", String(key === id)));
+    const update = () => {
+        queued = false;
+        if (chosen) return mark(chosen);
+        const line = window.innerHeight * 0.18;
+        const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+        const passed = sections.filter((section) => section.getBoundingClientRect().top <= line);
+        mark(atBottom ? sections.at(-1).id : passed.at(-1)?.id);
+    };
+
+    links.forEach((link, id) => link.addEventListener("click", () => {
+        chosen = id;
+        mark(id);
+    }));
+    ["wheel", "touchmove", "keydown"].forEach((type) => window.addEventListener(type, () => { chosen = null; }, { passive: true }));
+    window.addEventListener("scroll", () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(update);
+    }, { passive: true });
+    update();
+}
+
 function initMotion() {
     const animated = hasLibs && !reducedMotion;
     initProjectsToggle(animated);
+    initCurrentSection();
     if (!animated) return;
 
     root.classList.add("js");

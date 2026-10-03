@@ -408,8 +408,13 @@ h3 {
     scale: calc(1 + (var(--zoom) - 1) * 0.6);
 }
 
-/* Small orange circle that follows the pointer over a carousel image and says what a click does.
-   The system cursor stays; main.js only creates this on devices with a real mouse. */
+/* Over a carousel image the pointer becomes a small orange dot with a label up and to its left,
+   a speech bubble whose sharp corner points at the dot (after ossai.design). main.js creates it only
+   on devices with a real mouse, and only there is the system cursor hidden over those images. */
+.has-detail-hint .projects[data-mode="carousel"] .project__main {
+    cursor: none;
+}
+
 .detail-hint {
     position: fixed;
     top: 0;
@@ -418,28 +423,43 @@ h3 {
     pointer-events: none;
 }
 
-/* The circle itself is a child: GSAP owns the transform of the wrapper to move it, this one only pops in and out */
-.detail-hint span {
-    display: grid;
-    place-items: center;
-    width: 5.2rem;
-    height: 5.2rem;
-    /* Sits below and to the right of the pointer, so it never covers what is being pointed at */
-    margin: 0.9rem 0 0 0.9rem;
+/* GSAP owns the transform of the wrapper to move it; the two children only pop in and out */
+.detail-hint__dot {
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: var(--accent);
-    color: var(--bg);
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 500;
-    line-height: 1.15;
-    text-align: center;
     opacity: 0;
-    transform: scale(0.6);
+    transform: scale(0.4);
     transition: opacity 0.18s var(--ease-out), transform 0.18s var(--ease-out);
 }
 
-.detail-hint.is-visible span {
+.detail-hint__label {
+    position: absolute;
+    right: 9px;
+    bottom: 9px;
+    padding: 0.5rem 0.9rem;
+    border-radius: 12px 12px 3px 12px;
+    background: var(--text);
+    /* Lifts the light label off light screenshots */
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--bg) 55%, transparent);
+    color: var(--bg);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: scale(0.7);
+    transform-origin: bottom right;
+    transition: opacity 0.18s var(--ease-out), transform 0.18s var(--ease-out);
+}
+
+.detail-hint.is-visible .detail-hint__dot,
+.detail-hint.is-visible .detail-hint__label {
     opacity: 1;
     transform: none;
 }

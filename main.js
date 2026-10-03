@@ -312,7 +312,7 @@ function initProjectsToggle(animated) {
     });
 }
 
-// Over a carousel image, a small circle follows the pointer and says that a click opens the detail
+// Over a carousel image, a dot with a label follows the pointer and says that a click opens the detail
 function initDetailHint() {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
@@ -320,11 +320,13 @@ function initDetailHint() {
     const hint = document.createElement("div");
     hint.className = "detail-hint";
     hint.setAttribute("aria-hidden", "true");
-    hint.innerHTML = "<span>Ver detalles</span>";
+    hint.innerHTML = '<span class="detail-hint__label">Ver detalles</span><span class="detail-hint__dot"></span>';
     document.body.append(hint);
+    root.classList.add("has-detail-hint");
 
-    const moveX = gsap.quickTo(hint, "x", { duration: 0.22, ease: "power3" });
-    const moveY = gsap.quickTo(hint, "y", { duration: 0.22, ease: "power3" });
+    // Short lag: it replaces the cursor here, so it must stay close to the real pointer
+    const moveX = gsap.quickTo(hint, "x", { duration: 0.12, ease: "power3" });
+    const moveY = gsap.quickTo(hint, "y", { duration: 0.12, ease: "power3" });
     let shown = false;
 
     window.addEventListener("pointermove", (event) => {

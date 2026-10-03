@@ -312,6 +312,42 @@ function initProjectsToggle(animated) {
     });
 }
 
+// Over a carousel image, a small circle follows the pointer and says that a click opens the detail
+function initDetailHint() {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const section = document.querySelector("#projects");
+    const hint = document.createElement("div");
+    hint.className = "detail-hint";
+    hint.setAttribute("aria-hidden", "true");
+    hint.innerHTML = "<span>Ver detalles</span>";
+    document.body.append(hint);
+
+    const moveX = gsap.quickTo(hint, "x", { duration: 0.22, ease: "power3" });
+    const moveY = gsap.quickTo(hint, "y", { duration: 0.22, ease: "power3" });
+    let shown = false;
+
+    window.addEventListener("pointermove", (event) => {
+        const over = section.dataset.mode === "carousel"
+            && !section.classList.contains("is-switching")
+            && Boolean(event.target.closest?.(".project__main"));
+        if (over && !shown) gsap.set(hint, { x: event.clientX, y: event.clientY });
+        if (over) {
+            moveX(event.clientX);
+            moveY(event.clientY);
+        }
+        if (over !== shown) hint.classList.toggle("is-visible", over);
+        shown = over;
+    }, { passive: true });
+
+    const hide = () => {
+        hint.classList.remove("is-visible");
+        shown = false;
+    };
+    section.addEventListener("click", hide);
+    document.documentElement.addEventListener("pointerleave", hide);
+}
+
 // Marks the nav link of the section on screen: the last one whose top has passed a line just below the header.
 // A clicked link stays marked until the visitor scrolls by hand, because the last sections can never reach that line.
 function initCurrentSection() {
@@ -353,6 +389,7 @@ function initMotion() {
     buildCarousel();
     initReveal();
     initCurrentSection();
+    initDetailHint();
 
     ScrollTrigger.refresh();
     document.fonts?.ready.then(() => ScrollTrigger.refresh());

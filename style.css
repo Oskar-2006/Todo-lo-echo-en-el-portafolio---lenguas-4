@@ -381,18 +381,67 @@ h3 {
     transition: scale 0.35s var(--ease-out);
 }
 
+/* The smaller the piece looks on screen, the more it zooms: a key grows more than a wide capture */
+.project--render {
+    --zoom: 1.2;
+}
+
+.project--phone {
+    --zoom: 1.11;
+}
+
+.project--wide {
+    --zoom: 1.04;
+}
+
 @media (hover: hover) and (pointer: fine) {
     .projects[data-mode="carousel"] .project__main:hover img {
-        scale: 1.08;
+        scale: var(--zoom);
     }
 }
 
 .projects[data-mode="carousel"] .project__main:focus-visible img {
-    scale: 1.08;
+    scale: var(--zoom);
 }
 
 .projects[data-mode="carousel"] .project__main:active img {
-    scale: 1.04;
+    scale: calc(1 + (var(--zoom) - 1) * 0.6);
+}
+
+/* Small orange circle that follows the pointer over a carousel image and says what a click does.
+   The system cursor stays; main.js only creates this on devices with a real mouse. */
+.detail-hint {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    pointer-events: none;
+}
+
+/* The circle itself is a child: GSAP owns the transform of the wrapper to move it, this one only pops in and out */
+.detail-hint span {
+    display: grid;
+    place-items: center;
+    width: 5.2rem;
+    height: 5.2rem;
+    /* Sits below and to the right of the pointer, so it never covers what is being pointed at */
+    margin: 0.9rem 0 0 0.9rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.15;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.18s var(--ease-out), transform 0.18s var(--ease-out);
+}
+
+.detail-hint.is-visible span {
+    opacity: 1;
+    transform: none;
 }
 
 .projects.is-switching .project__main img {

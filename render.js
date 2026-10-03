@@ -47,13 +47,19 @@ function renderHero({ hero }) {
         }, content ?? h("span", { class: "label" }, media.placeholder)));
 }
 
-// Title on top, text underneath in two columns: no side-by-side header
+// Title and text stacked on the left; the portrait, when there is one, on the right.
+// Without a photo the text spreads over two columns instead.
 function renderAbout({ about }) {
-    return h("section", { id: "about", class: "section about" },
-        h("h2", { "data-reveal": true }, about.title),
-        h("div", { class: "about__body", "data-reveal": true },
-            about.paragraphs.map((text) => h("p", {}, text)),
-            about.note ? h("p", { class: "muted" }, about.note) : null));
+    const photo = about.photo?.src
+        ? h("figure", { class: "about__photo", "data-reveal": true }, h("img", { src: about.photo.src, alt: about.photo.alt ?? "", loading: "lazy" }))
+        : null;
+    return h("section", { id: "about", class: photo ? "section about about--photo" : "section about" },
+        h("div", { class: "about__text" },
+            h("h2", { "data-reveal": true }, about.title),
+            h("div", { class: "about__body", "data-reveal": true },
+                about.paragraphs.map((text) => h("p", {}, text)),
+                about.note ? h("p", { class: "muted" }, about.note) : null)),
+        photo);
 }
 
 function renderFigure(className, { src, alt }, extra = {}) {

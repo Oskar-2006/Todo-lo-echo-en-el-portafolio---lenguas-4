@@ -707,9 +707,10 @@ h3 {
 }
 
 /* Contact closes the page: tall enough to stand alone, content centered */
-/* Contact and the footer under it share the last screen */
+/* The exception: contact closes the page at its own size, it does not take a whole screen */
 .contact {
-    min-height: 100svh;
+    min-height: 0;
+    padding-block: clamp(4rem, 9vw, 7rem);
 }
 
 .site-footer {

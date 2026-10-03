@@ -313,7 +313,8 @@ function initMotion() {
 // The page is built from info.json first; motion starts once the content exists
 async function start() {
     try {
-        const response = await fetch("info.json");
+        // no-cache: always ask the server whether the content changed
+        const response = await fetch("info.json", { cache: "no-cache" });
         if (!response.ok) throw new Error(`info.json respondió ${response.status}`);
         renderPage(await response.json());
     } catch (error) {

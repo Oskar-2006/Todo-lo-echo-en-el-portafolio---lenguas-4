@@ -44,43 +44,58 @@ function initReveal() {
     });
 }
 
-// Projects, carousel mode on wide screens: the section is pinned and vertical scroll moves the row sideways.
-// On narrow screens the row is swiped by hand and CSS scroll-snap centers the cards.
+// Projects, carousel mode. Wide screens: the section is pinned and every project gets the whole stage,
+// one at a time; vertical scroll moves from one project to the next and the list of names on the left
+// shows which one is up. Narrow screens: a row swiped by hand, centred by CSS scroll-snap.
 const wideScreen = window.matchMedia("(min-width: 761px)");
-let carouselTween = null;
-let centerTimer = 0;
+let stage = null;
+let settleTimer = 0;
 
-// Side room so the first and the last card can reach the middle of the screen, whatever their width
+// Narrow screens only: side room so the first and the last card can reach the middle of the screen
 function fitTrackPadding() {
     const section = document.querySelector("#projects");
     const track = section.querySelector(".projects__track");
-    if (section.dataset.mode !== "carousel") {
+    if (section.dataset.mode !== "carousel" || stage) {
         track.style.paddingLeft = track.style.paddingRight = "";
-        return;
+    } else {
+        const room = (card) => `${Math.max(20, (window.innerWidth - card.offsetWidth) / 2)}px`;
+        track.style.paddingLeft = room(track.firstElementChild);
+        track.style.paddingRight = room(track.lastElementChild);
     }
-    const room = (card) => `${Math.max(20, (window.innerWidth - card.offsetWidth) / 2)}px`;
-    track.style.paddingLeft = room(track.firstElementChild);
-    track.style.paddingRight = room(track.lastElementChild);
-    updateFocus();
+    updateFocus(stage?.progress);
 }
 
-// The card in the middle of the screen is the one being presented: full size and with its text.
-// Each card gets --focus from 0 (far) to 1 (centred); the CSS turns that into scale and opacity.
-// progress: how far along the row the visitor is, for the line under the heading.
+// Tells every card how close it is to being the one presented:
+// --focus from 0 (away) to 1 (on stage) and --offset from -1 (already gone) to 1 (still to come).
+// The CSS turns those two numbers into opacity, scale and position.
 function updateFocus(progress) {
     const section = document.querySelector("#projects");
     if (section.dataset.mode !== "carousel") return;
 
-    const middle = window.innerWidth / 2;
-    const reach = Math.max(320, window.innerWidth * 0.42);
-    section.querySelectorAll(".project").forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        const distance = Math.abs(rect.left + rect.width / 2 - middle);
-        card.style.setProperty("--focus", Math.max(0, 1 - distance / reach).toFixed(3));
-    });
+    const cards = [...section.querySelectorAll(".project")];
+    let travelled = progress ?? 0;
 
-    const scroller = section.querySelector(".projects__scroller");
-    const travelled = progress ?? (scroller.scrollWidth > scroller.clientWidth ? scroller.scrollLeft / (scroller.scrollWidth - scroller.clientWidth) : 0);
+    if (stage) {
+        const position = travelled * (cards.length - 1);
+        cards.forEach((card, index) => {
+            const offset = Math.max(-1, Math.min(1, index - position));
+            card.style.setProperty("--offset", offset.toFixed(3));
+            card.style.setProperty("--focus", (1 - Math.abs(offset)).toFixed(3));
+        });
+        const current = Math.round(position);
+        section.querySelectorAll(".projects__index button").forEach((button, index) => button.setAttribute("aria-current", String(index === current)));
+    } else {
+        const middle = window.innerWidth / 2;
+        const reach = Math.max(320, window.innerWidth * 0.42);
+        cards.forEach((card) => {
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty("--offset", "0");
+            card.style.setProperty("--focus", Math.max(0, 1 - Math.abs(rect.left + rect.width / 2 - middle) / reach).toFixed(3));
+        });
+        const scroller = section.querySelector(".projects__scroller");
+        if (progress === undefined && scroller.scrollWidth > scroller.clientWidth) travelled = scroller.scrollLeft / (scroller.scrollWidth - scroller.clientWidth);
+    }
+
     section.querySelector(".projects__progress span").style.transform = `scaleX(${travelled.toFixed(4)})`;
 }
 
@@ -93,71 +108,64 @@ function initSwipeFocus() {
         queued = true;
         requestAnimationFrame(() => {
             queued = false;
-            if (!carouselTween) updateFocus();
+            if (!stage) updateFocus();
         });
     }, { passive: true });
 }
 
 function buildCarousel() {
     const section = document.querySelector("#projects");
-    fitTrackPadding();
-    if (carouselTween || section.dataset.mode !== "carousel" || !wideScreen.matches) return;
+    if (!stage && section.dataset.mode === "carousel" && wideScreen.matches) {
+        const steps = section.querySelectorAll(".project").length - 1;
 
-    const track = section.querySelector(".projects__track");
-    const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
-
-    section.classList.add("is-pinned");
-    carouselTween = gsap.to(track, {
-        x: () => -distance(),
-        ease: "none",
-        scrollTrigger: {
+        section.classList.add("is-pinned");
+        stage = ScrollTrigger.create({
             trigger: section,
             start: "top top",
-            end: () => `+=${distance()}`,
+            // Most of a screen of scroll per project
+            end: () => `+=${Math.round(window.innerHeight * 0.85 * steps)}`,
             pin: true,
-            scrub: true,
             invalidateOnRefresh: true,
             anticipatePin: 1,
-            // When scrolling stops between two cards for a moment, slide to the nearest one
+            // Scroll moves between projects; when it stops in between, it settles on the nearest one
             onUpdate: (self) => {
                 updateFocus(self.progress);
-                clearTimeout(centerTimer);
-                centerTimer = setTimeout(centerNearestCard, 1500);
+                clearTimeout(settleTimer);
+                settleTimer = setTimeout(settleOnProject, 320);
             },
             onRefresh: (self) => updateFocus(self.progress),
-        },
-    });
+        });
+    }
+    fitTrackPadding();
 }
 
 function destroyCarousel() {
-    if (!carouselTween) return;
-    clearTimeout(centerTimer);
-    const section = document.querySelector("#projects");
-    carouselTween.scrollTrigger.kill(true);
-    carouselTween.kill();
-    carouselTween = null;
-    gsap.set(section.querySelector(".projects__track"), { clearProps: "transform" });
-    section.classList.remove("is-pinned");
+    if (!stage) return;
+    clearTimeout(settleTimer);
+    stage.kill(true);
+    stage = null;
+    document.querySelector("#projects").classList.remove("is-pinned");
 }
 
-function centerNearestCard() {
-    const trigger = carouselTween?.scrollTrigger;
-    if (!trigger || !trigger.isActive) return;
-
-    const track = document.querySelector("#projects .projects__track");
-    const trackLeft = track.getBoundingClientRect().left;
-    const distance = Math.max(1, track.scrollWidth - window.innerWidth);
-    const stops = [...track.children].map((card) => {
-        const rect = card.getBoundingClientRect();
-        const center = rect.left - trackLeft + rect.width / 2;
-        return Math.min(1, Math.max(0, (center - window.innerWidth / 2) / distance));
-    });
-    const nearest = stops.reduce((best, stop) => (Math.abs(stop - trigger.progress) < Math.abs(best - trigger.progress) ? stop : best));
-    const target = trigger.start + nearest * (trigger.end - trigger.start);
-
+function scrollToProject(index, duration = 0.7) {
+    if (!stage) return;
+    const steps = document.querySelectorAll("#projects .project").length - 1;
+    const target = stage.start + (index / steps) * (stage.end - stage.start);
     if (Math.abs(target - window.scrollY) < 2) return;
-    if (lenis) lenis.scrollTo(target, { duration: 0.8 });
+    if (lenis) lenis.scrollTo(target, { duration });
     else window.scrollTo({ top: target, behavior: "smooth" });
+}
+
+function settleOnProject() {
+    if (!stage || !stage.isActive) return;
+    const steps = document.querySelectorAll("#projects .project").length - 1;
+    scrollToProject(Math.round(stage.progress * steps));
+}
+
+function initProjectIndex() {
+    document.querySelectorAll("#projects .projects__index button").forEach((button) => {
+        button.addEventListener("click", () => scrollToProject(Number(button.dataset.index), 0.9));
+    });
 }
 
 function scrollToInstantly(top) {
@@ -283,6 +291,7 @@ function initMotion() {
     initProjectsToggle(animated);
     fitTrackPadding();
     initSwipeFocus();
+    initProjectIndex();
     window.addEventListener("resize", fitTrackPadding);
     if (!animated) return;
 

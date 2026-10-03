@@ -311,6 +311,7 @@ h3 {
    The image scales inside its box, so the box that flies between modes never changes size. */
 .project {
     --focus: 1;
+    --offset: 0;
     --lift: 1;
 }
 
@@ -481,10 +482,122 @@ h3 {
     white-space: nowrap;
 }
 
-/* Cards far from the middle dissolve at the edges of the screen instead of being cut */
-.projects[data-mode="carousel"].is-pinned:not(.is-switching) .projects__scroller {
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+/* The list of names only exists on the pinned stage */
+.projects__index {
+    display: none;
+}
+
+/* ---- Pinned stage (wide screens): one project at a time, each with the whole space ---- */
+.projects[data-mode="carousel"].is-pinned .projects__scroller {
+    position: relative;
+    overflow: hidden;
+    scroll-snap-type: none;
+}
+
+.projects[data-mode="carousel"].is-pinned .projects__track {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    gap: 0;
+    /* Room on the left for the list of names, so the piece sits right of centre */
+    padding: 0 var(--gutter) 0 clamp(16rem, 24vw, 24rem);
+}
+
+.projects[data-mode="carousel"].is-pinned .project {
+    grid-area: 1 / 1;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 0;
+    pointer-events: none;
+}
+
+.projects[data-mode="carousel"].is-pinned .project__media {
+    display: grid;
+    place-items: center;
+    max-width: 100%;
+}
+
+.projects[data-mode="carousel"].is-pinned .project__main {
+    height: min(60svh, 38rem);
+    max-width: 100%;
+    margin: 0;
+    opacity: clamp(0, calc((var(--focus) - 0.35) * 1.7), 1);
+}
+
+/* The piece leaving goes up and the one arriving comes from below, following the scroll */
+.projects[data-mode="carousel"].is-pinned .project__main img {
+    transform: translateY(calc(var(--offset) * 16svh)) scale(calc(0.86 + 0.14 * var(--focus)));
+    transform-origin: 50% 50%;
+    transition: none;
+}
+
+/* What kind of work it is and the one-line pitch, bottom left; the name lives in the list */
+.projects[data-mode="carousel"].is-pinned .project__body {
+    position: absolute;
+    left: var(--gutter);
+    bottom: clamp(1.5rem, 5svh, 3rem);
+    max-width: 22rem;
+    opacity: clamp(0, calc((var(--focus) - 0.6) * 2.5), 1);
+    transform: translateY(calc(var(--offset) * 18px));
+}
+
+.projects[data-mode="carousel"].is-pinned .project h3 {
+    display: none;
+}
+
+.projects[data-mode="carousel"].is-pinned .projects__index {
+    display: grid;
+    gap: 0.35rem;
+    position: absolute;
+    left: var(--gutter);
+    top: 44%;
+    z-index: 2;
+    transform: translateY(-50%);
+}
+
+.projects__index button {
+    padding: 0.1rem 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: clamp(1.5rem, 2.3vw, 2.1rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    text-align: left;
+    color: color-mix(in srgb, var(--text) 26%, transparent);
+    cursor: pointer;
+    transition: color 0.3s var(--ease-out), transform 0.16s var(--ease-out);
+}
+
+.projects__index button[aria-current="true"] {
+    color: var(--text);
+}
+
+.projects__index button:focus-visible {
+    color: var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .projects__index button:hover {
+        color: color-mix(in srgb, var(--text) 70%, transparent);
+    }
+
+    .projects__index button[aria-current="true"]:hover {
+        color: var(--text);
+    }
+}
+
+.projects__index button:active {
+    transform: scale(0.98);
+}
+
+/* Short screens: smaller names so the list never meets the caption under it */
+@media (max-height: 720px) {
+    .projects__index button {
+        font-size: 1.3rem;
+    }
 }
 
 /* Detail: one row per project, image and text side by side, alternating */

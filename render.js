@@ -94,6 +94,9 @@ function renderProjects({ projects }) {
                 }, projects.toggle.detail)),
             h("div", { class: "projects__progress", "aria-hidden": "true" }, h("span", {})),
             h("div", { class: "projects__scroller" },
+                // Names of all the projects; on wide screens the one on stage is lit and a click jumps to it
+                h("ul", { class: "projects__index" },
+                    projects.items.map((item, index) => h("li", {}, h("button", { type: "button", "data-index": String(index) }, item.name)))),
                 h("div", { class: "projects__track" },
                     projects.items.map((item) => renderProject(item, projects.facts))))));
 }

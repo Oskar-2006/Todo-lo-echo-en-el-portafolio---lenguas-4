@@ -17,7 +17,8 @@ function initScroll() {
             const target = document.querySelector(link.getAttribute("href"));
             if (!target) return;
             event.preventDefault();
-            lenis.scrollTo(target, { duration: 1.1 });
+            // Coming from below, the pinned projects section sits at the end of its pin: go to its first project instead
+            lenis.scrollTo(target.id === "projects" && stage ? stage.start : target, { duration: 1.1 });
         });
     });
 }
@@ -81,6 +82,8 @@ function updateFocus(progress) {
             const offset = Math.max(-1, Math.min(1, index - position));
             card.style.setProperty("--offset", offset.toFixed(3));
             card.style.setProperty("--focus", (1 - Math.abs(offset)).toFixed(3));
+            // Only the project on stage can be clicked; the others are stacked under it
+            card.classList.toggle("is-current", index === Math.round(position));
         });
     } else {
         const middle = window.innerWidth / 2;
@@ -248,9 +251,24 @@ function initProjectsToggle(animated) {
     const images = [...section.querySelectorAll(".project__main")];
     const rects = () => images.map((image) => image.getBoundingClientRect());
 
-    button.addEventListener("click", () => {
+    // In the carousel the images themselves are the way into the detail; there they are plain pictures again
+    const syncImageButtons = () => {
+        const clickable = section.dataset.mode === "carousel";
+        images.forEach((image, index) => {
+            if (clickable) {
+                image.setAttribute("role", "button");
+                image.setAttribute("tabindex", "0");
+                image.setAttribute("aria-label", `Ver en detalle: ${image.closest(".project").querySelector("h3").textContent}`);
+            } else {
+                ["role", "tabindex", "aria-label"].forEach((name) => image.removeAttribute(name));
+            }
+        });
+    };
+
+    // index: the project to stay on; when missing, the one being looked at
+    const switchMode = (index) => {
         const next = section.dataset.mode === "carousel" ? "detail" : "carousel";
-        const current = currentProjectIndex(section);
+        const current = index ?? currentProjectIndex(section);
         const first = rects();
 
         if (animated) destroyCarousel();
@@ -270,7 +288,21 @@ function initProjectsToggle(animated) {
         showProject(section, current);
         if (animated) flyImages(section, images, first, rects(), current, next === "detail");
         else section.querySelector(".projects__track").animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: "ease" });
+        syncImageButtons();
+    };
+
+    button.addEventListener("click", () => switchMode());
+    images.forEach((image, index) => {
+        image.addEventListener("click", () => {
+            if (section.dataset.mode === "carousel") switchMode(index);
+        });
+        image.addEventListener("keydown", (event) => {
+            if (section.dataset.mode !== "carousel" || (event.key !== "Enter" && event.key !== " ")) return;
+            event.preventDefault();
+            switchMode(index);
+        });
     });
+    syncImageButtons();
 
     if (!animated) return;
     wideScreen.addEventListener("change", () => {

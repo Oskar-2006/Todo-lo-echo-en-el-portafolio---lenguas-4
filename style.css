@@ -371,10 +371,37 @@ h3 {
     transform: translateY(calc((1 - var(--focus)) * 14px));
 }
 
+/* In the carousel the image is the button that opens the detail: it zooms under the pointer to say so.
+   The zoom uses the scale property, so it does not fight the transform that the scroll drives. */
+.projects[data-mode="carousel"] .project__main {
+    cursor: pointer;
+}
+
+.projects[data-mode="carousel"] .project__main img {
+    transition: scale 0.35s var(--ease-out);
+}
+
 @media (hover: hover) and (pointer: fine) {
-    .projects[data-mode="carousel"] .project__main:hover {
-        --lift: 1.02;
+    .projects[data-mode="carousel"] .project__main:hover img {
+        scale: 1.08;
     }
+}
+
+.projects[data-mode="carousel"] .project__main:focus-visible img {
+    scale: 1.08;
+}
+
+.projects[data-mode="carousel"] .project__main:active img {
+    scale: 1.04;
+}
+
+.projects.is-switching .project__main img {
+    scale: 1;
+}
+
+/* The button only exists in the detail, as the way back */
+.projects[data-mode="carousel"] .projects__toggle {
+    display: none;
 }
 
 /* A thin line under the heading that fills as the row advances */
@@ -562,7 +589,10 @@ h3 {
 .projects[data-mode="carousel"].is-pinned .project__main img {
     transform: translateX(calc(var(--offset) * 62vw)) scale(calc(0.84 + 0.16 * var(--focus)));
     transform-origin: 50% 50%;
-    transition: none;
+}
+
+.projects[data-mode="carousel"].is-pinned .project.is-current .project__main {
+    pointer-events: auto;
 }
 
 /* The name of the project on stage, large, at the left: it comes in with its piece and leaves with it */
@@ -717,33 +747,43 @@ h3 {
     background: var(--bg-soft);
 }
 
+/* Stacked and large, so the section is filled by its own content */
 .skills__grid {
     display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: clamp(2rem, 5vw, 5rem);
-    align-items: start;
+    gap: clamp(3rem, 7vw, 6rem);
 }
 
 .skills__title {
-    margin-bottom: 1rem;
+    margin-bottom: 1.4rem;
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 400;
     letter-spacing: 0;
-    color: var(--muted);
+    color: var(--accent);
+}
+
+/* What I do: big lines in two columns, each with a rule on top */
+.skills__does {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2rem, 5vw, 5rem);
 }
 
 .skills__does li {
-    font-size: 1.15rem;
-    line-height: 1.9;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--line);
+    font-size: clamp(1.35rem, 2.5vw, 2.2rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
 }
 
-/* Tools read as one big sentence, split by accent slashes */
+/* Tools read as one very large sentence, split by accent slashes */
 .skills__tools {
-    font-size: clamp(1.5rem, 3.2vw, 2.6rem);
+    font-size: clamp(2.1rem, 6.2vw, 5.6rem);
     font-weight: 600;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
     text-wrap: balance;
 }
 
@@ -819,9 +859,12 @@ h3 {
 }
 
 @media (max-width: 760px) {
-    .hero,
-    .skills__grid {
+    .hero {
         grid-template-columns: 1fr;
+    }
+
+    .skills__does {
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .about__body {

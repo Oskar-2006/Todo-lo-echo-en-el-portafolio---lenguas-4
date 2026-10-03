@@ -132,7 +132,7 @@ function buildCarousel() {
             onUpdate: (self) => {
                 updateFocus(self.progress);
                 clearTimeout(settleTimer);
-                settleTimer = setTimeout(settleOnProject, 120);
+                settleTimer = setTimeout(settleOnProject, 60);
             },
             onRefresh: (self) => updateFocus(self.progress),
         });
@@ -148,12 +148,15 @@ function destroyCarousel() {
     document.querySelector("#projects").classList.remove("is-pinned");
 }
 
-function scrollToProject(index, duration = 0.45) {
+// Ease-out: the slide starts at full speed, so it answers at once, and brakes softly as the project reaches the centre
+const easeOutQuart = (t) => 1 - (1 - t) ** 4;
+
+function scrollToProject(index, duration = 0.32) {
     if (!stage) return;
     const steps = document.querySelectorAll("#projects .project").length - 1;
     const target = stage.start + (index / steps) * (stage.end - stage.start);
     if (Math.abs(target - window.scrollY) < 2) return;
-    if (lenis) lenis.scrollTo(target, { duration });
+    if (lenis) lenis.scrollTo(target, { duration, easing: easeOutQuart });
     else window.scrollTo({ top: target, behavior: "smooth" });
 }
 

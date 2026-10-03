@@ -165,18 +165,48 @@ function scrollToInstantly(top) {
     else window.scrollTo(0, top);
 }
 
-// The main images gather into a stack in the middle of the screen and then deal out to their new places.
-// first / last: where each image was before the switch and where it sits after it.
-function flyImages(section, images, first, last) {
-    const stackWidth = Math.min(window.innerWidth * 0.24, 240);
-    const middle = (images.length - 1) / 2;
+// Which project the visitor is looking at right now, in either mode
+function currentProjectIndex(section) {
+    const cards = [...section.querySelectorAll(".project")];
+    if (section.dataset.mode === "carousel") {
+        if (stage) return Math.round(stage.progress * (cards.length - 1));
+        const focus = cards.map((card) => Number(card.style.getPropertyValue("--focus")) || 0);
+        return focus.indexOf(Math.max(...focus));
+    }
+    const middle = window.innerHeight / 2;
+    const distance = cards.map((card) => { const rect = card.getBoundingClientRect(); return Math.abs(rect.top + rect.height / 2 - middle); });
+    return distance.indexOf(Math.min(...distance));
+}
 
+// After the mode changed: put the same project back in front of the visitor
+function showProject(section, index) {
+    const cards = [...section.querySelectorAll(".project")];
+    if (section.dataset.mode === "detail") {
+        // Its row starts right under the site header and the sticky heading of the section
+        const bars = document.querySelector(".site-header").offsetHeight + section.querySelector(".projects__head").offsetHeight;
+        scrollToInstantly(cards[index].getBoundingClientRect().top + window.scrollY - bars);
+    } else if (stage) {
+        scrollToInstantly(stage.start + (index / (cards.length - 1)) * (stage.end - stage.start));
+        updateFocus(index / (cards.length - 1));
+    } else {
+        const scroller = section.querySelector(".projects__scroller");
+        scroller.scrollLeft = cards[index].offsetLeft + cards[index].offsetWidth / 2 - scroller.clientWidth / 2;
+        scrollToInstantly(section.getBoundingClientRect().top + window.scrollY);
+        updateFocus();
+    }
+}
+
+// Each main image travels from where it was to where it now belongs.
+// The project the visitor was looking at stays on top and leads; the others come out from behind it
+// (towards the detail rows) or tuck in behind it (back to the carousel).
+// first / last: the place of each image before and after the switch.
+function flyImages(section, images, first, last, current, toDetail) {
     section.classList.add("is-switching");
     lenis?.stop();
 
     const timeline = gsap.timeline({
         onComplete: () => {
-            gsap.set(images, { clearProps: "transform,zIndex,position" });
+            gsap.set(images, { clearProps: "transform,zIndex,position,opacity" });
             section.classList.remove("is-switching");
             lenis?.start();
         },
@@ -185,36 +215,30 @@ function flyImages(section, images, first, last) {
     images.forEach((image, index) => {
         const from = first[index];
         const to = last[index];
-        const stackScale = stackWidth / to.width;
-        const fan = index - middle;
+        const leading = index === current;
+        const delay = Math.abs(index - current) * 0.07;
 
         gsap.set(image, {
             position: "relative",
-            zIndex: 20 + index,
+            zIndex: leading ? 60 : 20 + index,
             transformOrigin: "top left",
             x: from.left - to.left,
             y: from.top - to.top,
             scale: from.width / to.width,
+            // In the carousel only the project on stage is visible
+            opacity: leading || !toDetail ? 1 : 0,
         });
-        timeline
-            .to(image, {
-                x: window.innerWidth / 2 - stackWidth / 2 - to.left + fan * 22,
-                y: window.innerHeight / 2 - (to.height * stackScale) / 2 - to.top + Math.abs(fan) * 10,
-                scale: stackScale,
-                rotation: fan * 4,
-                duration: 0.5,
-                ease: "power3.inOut",
-            }, index * 0.04)
-            .to(image, { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.7, ease: "power3.out" }, 0.62 + index * 0.06);
+        timeline.to(image, { x: 0, y: 0, scale: 1, duration: 0.85, ease: "power3.inOut" }, delay);
+        if (!leading) timeline.to(image, { opacity: toDetail ? 1 : 0, duration: toDetail ? 0.3 : 0.4, ease: "power1.out" }, toDetail ? delay : delay + 0.45);
     });
 
     timeline.from(section.querySelectorAll(".project__body, .project__extra"), {
         opacity: 0,
         y: 18,
         duration: 0.45,
-        stagger: 0.05,
+        stagger: 0.04,
         clearProps: "opacity,transform",
-    }, 0.8);
+    }, 0.55);
 }
 
 // Works without the libraries too: then the mode just changes, with no flight
@@ -226,6 +250,7 @@ function initProjectsToggle(animated) {
 
     button.addEventListener("click", () => {
         const next = section.dataset.mode === "carousel" ? "detail" : "carousel";
+        const current = currentProjectIndex(section);
         const first = rects();
 
         if (animated) destroyCarousel();
@@ -235,13 +260,15 @@ function initProjectsToggle(animated) {
         button.animate([{ opacity: 0.35, filter: "blur(2px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 220, easing: "ease" });
         section.querySelector(".projects__scroller").scrollLeft = 0;
 
-        fitTrackPadding();
         if (animated) {
             buildCarousel();
             ScrollTrigger.refresh();
+        } else {
+            fitTrackPadding();
         }
-        scrollToInstantly(section.getBoundingClientRect().top + window.scrollY);
-        if (animated) flyImages(section, images, first, rects());
+        // Stay on the project that was being looked at instead of going back to the first one
+        showProject(section, current);
+        if (animated) flyImages(section, images, first, rects(), current, next === "detail");
         else section.querySelector(".projects__track").animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: "ease" });
     });
 

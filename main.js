@@ -132,7 +132,7 @@ function buildCarousel() {
             onUpdate: (self) => {
                 updateFocus(self.progress);
                 clearTimeout(settleTimer);
-                settleTimer = setTimeout(settleOnProject, 320);
+                settleTimer = setTimeout(settleOnProject, 120);
             },
             onRefresh: (self) => updateFocus(self.progress),
         });
@@ -148,7 +148,7 @@ function destroyCarousel() {
     document.querySelector("#projects").classList.remove("is-pinned");
 }
 
-function scrollToProject(index, duration = 0.7) {
+function scrollToProject(index, duration = 0.45) {
     if (!stage) return;
     const steps = document.querySelectorAll("#projects .project").length - 1;
     const target = stage.start + (index / steps) * (stage.end - stage.start);

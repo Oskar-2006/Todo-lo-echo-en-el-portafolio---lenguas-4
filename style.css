@@ -171,9 +171,10 @@ h3 {
 }
 
 /* Layout */
-/* Every section takes one whole screen, with its content centred in the space under the header */
+/* Every section takes a little more than one screen, so it has air around it and the next one
+   does not start exactly at the fold; its content is centred */
 .section {
-    min-height: 100svh;
+    min-height: 116svh;
     display: grid;
     align-content: center;
     padding: calc(var(--header-h) + clamp(1.5rem, 5vw, 4rem)) var(--gutter) clamp(2.5rem, 6vw, 5rem);
@@ -611,7 +612,7 @@ h3 {
     gap: clamp(2rem, 5vw, 5rem);
     align-items: center;
     align-content: center;
-    min-height: calc(100svh - var(--header-h) - 4.6rem);
+    min-height: 104svh;
     padding: clamp(1.5rem, 4vw, 3rem) var(--gutter);
     border-top: 1px solid var(--line);
 }
@@ -708,7 +709,7 @@ h3 {
 /* Contact closes the page: tall enough to stand alone, content centered */
 /* Contact and the footer under it share the last screen */
 .contact {
-    min-height: calc(100svh - 5.5rem);
+    min-height: 100svh;
 }
 
 .site-footer {

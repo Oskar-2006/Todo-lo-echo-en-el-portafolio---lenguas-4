@@ -44,9 +44,9 @@ function initReveal() {
     });
 }
 
-// Projects, carousel mode. Wide screens: the section is pinned and every project gets the whole stage,
-// one at a time; vertical scroll moves from one project to the next and the list of names on the left
-// shows which one is up. Narrow screens: a row swiped by hand, centred by CSS scroll-snap.
+// Projects, carousel mode. Wide screens: the section is pinned and the projects pass sideways one at a time,
+// driven by vertical scroll; the name of the one on stage appears as it arrives and leaves with it.
+// Narrow screens: a row swiped by hand, centred by CSS scroll-snap.
 const wideScreen = window.matchMedia("(min-width: 761px)");
 let stage = null;
 let settleTimer = 0;
@@ -82,8 +82,6 @@ function updateFocus(progress) {
             card.style.setProperty("--offset", offset.toFixed(3));
             card.style.setProperty("--focus", (1 - Math.abs(offset)).toFixed(3));
         });
-        const current = Math.round(position);
-        section.querySelectorAll(".projects__index button").forEach((button, index) => button.setAttribute("aria-current", String(index === current)));
     } else {
         const middle = window.innerWidth / 2;
         const reach = Math.max(320, window.innerWidth * 0.42);
@@ -160,12 +158,6 @@ function settleOnProject() {
     if (!stage || !stage.isActive) return;
     const steps = document.querySelectorAll("#projects .project").length - 1;
     scrollToProject(Math.round(stage.progress * steps));
-}
-
-function initProjectIndex() {
-    document.querySelectorAll("#projects .projects__index button").forEach((button) => {
-        button.addEventListener("click", () => scrollToProject(Number(button.dataset.index), 0.9));
-    });
 }
 
 function scrollToInstantly(top) {
@@ -291,7 +283,6 @@ function initMotion() {
     initProjectsToggle(animated);
     fitTrackPadding();
     initSwipeFocus();
-    initProjectIndex();
     window.addEventListener("resize", fitTrackPadding);
     if (!animated) return;
 

@@ -373,15 +373,16 @@ h3 {
     mask-image: linear-gradient(#000 82%, transparent);
 }
 
+/* The glow belongs to the image, not to its box, so it travels with the render when the carousel moves it */
 .project--render img {
     object-fit: contain;
     border-radius: 0;
+    background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%);
 }
 
 .project--render .project__main,
 .project--render .project__extra {
     aspect-ratio: 4 / 5;
-    background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%);
 }
 
 .project--phone .project__main,
@@ -482,11 +483,6 @@ h3 {
     white-space: nowrap;
 }
 
-/* The list of names only exists on the pinned stage */
-.projects__index {
-    display: none;
-}
-
 /* ---- Pinned stage (wide screens): one project at a time, each with the whole space ---- */
 .projects[data-mode="carousel"].is-pinned .projects__scroller {
     position: relative;
@@ -522,82 +518,32 @@ h3 {
     height: min(60svh, 38rem);
     max-width: 100%;
     margin: 0;
-    opacity: clamp(0, calc((var(--focus) - 0.35) * 1.7), 1);
+    opacity: clamp(0, calc((var(--focus) - 0.12) * 1.5), 1);
 }
 
-/* The piece leaving goes up and the one arriving comes from below, following the scroll */
+/* A carousel: the piece leaving slides out to the left while the next one slides in from the right */
 .projects[data-mode="carousel"].is-pinned .project__main img {
-    transform: translateY(calc(var(--offset) * 16svh)) scale(calc(0.86 + 0.14 * var(--focus)));
+    transform: translateX(calc(var(--offset) * 62vw)) scale(calc(0.84 + 0.16 * var(--focus)));
     transform-origin: 50% 50%;
     transition: none;
 }
 
-/* What kind of work it is and the one-line pitch, bottom left; the name lives in the list */
+/* The name of the project on stage, large, at the left: it comes in with its piece and leaves with it */
 .projects[data-mode="carousel"].is-pinned .project__body {
     position: absolute;
     left: var(--gutter);
-    bottom: clamp(1.5rem, 5svh, 3rem);
-    max-width: 22rem;
-    opacity: clamp(0, calc((var(--focus) - 0.6) * 2.5), 1);
-    transform: translateY(calc(var(--offset) * 18px));
+    top: 46%;
+    display: grid;
+    gap: 0.6rem;
+    width: min(24rem, 30vw);
+    min-width: 0;
+    opacity: clamp(0, calc((var(--focus) - 0.62) * 2.7), 1);
+    transform: translateY(calc(-50% + var(--offset) * 34px));
 }
 
 .projects[data-mode="carousel"].is-pinned .project h3 {
-    display: none;
-}
-
-.projects[data-mode="carousel"].is-pinned .projects__index {
-    display: grid;
-    gap: 0.35rem;
-    position: absolute;
-    left: var(--gutter);
-    top: 44%;
-    z-index: 2;
-    transform: translateY(-50%);
-}
-
-.projects__index button {
-    padding: 0.1rem 0;
-    border: 0;
-    background: none;
-    font: inherit;
-    font-size: clamp(1.5rem, 2.3vw, 2.1rem);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.25;
-    text-align: left;
-    color: color-mix(in srgb, var(--text) 26%, transparent);
-    cursor: pointer;
-    transition: color 0.3s var(--ease-out), transform 0.16s var(--ease-out);
-}
-
-.projects__index button[aria-current="true"] {
-    color: var(--text);
-}
-
-.projects__index button:focus-visible {
-    color: var(--accent);
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .projects__index button:hover {
-        color: color-mix(in srgb, var(--text) 70%, transparent);
-    }
-
-    .projects__index button[aria-current="true"]:hover {
-        color: var(--text);
-    }
-}
-
-.projects__index button:active {
-    transform: scale(0.98);
-}
-
-/* Short screens: smaller names so the list never meets the caption under it */
-@media (max-height: 720px) {
-    .projects__index button {
-        font-size: 1.3rem;
-    }
+    font-size: clamp(2.2rem, 4.2vw, 4rem);
+    white-space: normal;
 }
 
 /* Detail: one row per project, image and text side by side, alternating */

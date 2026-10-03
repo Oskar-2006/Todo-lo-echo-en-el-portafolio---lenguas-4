@@ -312,6 +312,34 @@ function initProjectsToggle(animated) {
     });
 }
 
+// The names of the tools are built letter by letter when they scroll into view:
+// each letter rises into place as an outline and then fills in (the CSS does the drawing, --i sets the order)
+function initBuildTools() {
+    const tools = document.querySelector(".skills__tools");
+    if (!tools) return;
+
+    let order = 0;
+    tools.querySelectorAll("span").forEach((word) => {
+        const text = word.textContent;
+        // Screen readers get the whole name once instead of loose letters
+        word.setAttribute("aria-label", text);
+        word.replaceChildren(...[...text].map((character) => {
+            if (character === " ") return " ";
+            const letter = document.createElement("span");
+            letter.className = "letter";
+            letter.setAttribute("aria-hidden", "true");
+            letter.style.setProperty("--i", order++);
+            letter.textContent = character;
+            return letter;
+        }));
+        // The slash after the name appears once its last letter is in
+        word.style.setProperty("--i", order);
+    });
+
+    tools.classList.add("is-split");
+    ScrollTrigger.create({ trigger: tools, start: "top 78%", once: true, onEnter: () => tools.classList.add("is-built") });
+}
+
 // Over a carousel image, a dot with a label follows the pointer and says that a click opens the detail
 function initDetailHint() {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
@@ -392,6 +420,7 @@ function initMotion() {
     initReveal();
     initCurrentSection();
     initDetailHint();
+    initBuildTools();
 
     ScrollTrigger.refresh();
     document.fonts?.ready.then(() => ScrollTrigger.refresh());

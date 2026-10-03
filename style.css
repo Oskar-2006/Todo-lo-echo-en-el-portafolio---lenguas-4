@@ -856,14 +856,46 @@ h3 {
     text-wrap: balance;
 }
 
-.skills__tools span {
+.skills__tools > span {
     white-space: nowrap;
 }
 
-.skills__tools span:not(:last-child)::after {
+.skills__tools > span:not(:last-child)::after {
     content: " / ";
     color: var(--accent);
     font-weight: 400;
+}
+
+/* Built letter by letter (main.js splits the names): each letter rises in as an outline, then fills in */
+.skills__tools .letter {
+    --step: calc(var(--i) * 32ms);
+    display: inline-block;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--text) 75%, transparent);
+    opacity: 0;
+    transform: translateY(0.4em);
+    transition:
+        opacity 0.25s var(--ease-out) var(--step),
+        transform 0.5s var(--ease-out) var(--step),
+        color 0.45s ease calc(var(--step) + 320ms),
+        -webkit-text-stroke-color 0.45s ease calc(var(--step) + 320ms);
+}
+
+.skills__tools.is-built .letter {
+    color: var(--text);
+    -webkit-text-stroke-color: transparent;
+    opacity: 1;
+    transform: none;
+}
+
+.skills__tools.is-split > span::after {
+    opacity: 0;
+}
+
+/* The transition lives only here: on the hidden state it would fade the slashes out, one by one, on load */
+.skills__tools.is-built > span::after {
+    opacity: 1;
+    transition: opacity 0.4s ease calc(var(--i) * 32ms + 200ms);
 }
 
 /* Contact */
@@ -934,6 +966,11 @@ h3 {
 
     .skills__does {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* The longest name with its slash has to fit in one line of a phone */
+    .skills__tools {
+        font-size: clamp(1.5rem, 8.2vw, 2.1rem);
     }
 
     .about__body {
